@@ -1200,6 +1200,7 @@ def read_index():
         path_end = entry_data.index(b'\x00', fields_end)
         path = entry_data[fields_end:path_end]
         entry = IndexEntry(*(fields + (path.decode(),)))
+        print(entry)
         entries.append(entry)
         entry_len = ((62 + len(path) + 8) // 8) * 8
         i += entry_len
