@@ -877,9 +877,12 @@ def __get_value_from_config_file(key):
 
 def __read_private_key():
     """
-    Reads the private key from a (ebcrypted) pem file and returns it
+    Reads the private key from a (encrypted) pem file and returns it
     """
     identity_file_path = __get_value_from_config_file('IdentityFile')
+    if identity_file_path == None:
+        print('No identity file provided. Please provide an identity file on your config file')
+        sys.exit(1)
     content = read_file(os.path.expanduser(identity_file_path))
     password = ''
     try:
@@ -910,6 +913,14 @@ def __get_user_dlt_address():
     private_key = __read_private_key()
     acct = Account.privateKeyToAccount(private_key)
     return acct.address
+
+def print_user_address():
+    """
+    Prints users address on the console
+    """
+    private_key = __read_private_key()
+    acct = Account.privateKeyToAccount(private_key)
+    print('Your address is: {}'.format(acct.address))
 
 
 def create():
@@ -2234,6 +2245,9 @@ def main():
     sub_parser = sub_parsers.add_parser('fetch',
             help='Download object and refs from another repository')
 
+    sub_parser = sub_parsers.add_parser('get-address',
+            help='Get Matic wallet address')
+
     sub_parser = sub_parsers.add_parser('merge',
             help='Join two or more development histories together')
 
@@ -2277,6 +2291,8 @@ def main():
         connect_to_infura()
         fetch()
         close_to_infura()
+    elif args.command == 'get-address':
+        print_user_address()
     elif args.command == 'hash-object':
         sha1 = hash_object(read_file(args.path), args.type, write=args.write)
         print(sha1)
