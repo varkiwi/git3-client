@@ -1,0 +1,6 @@
+ethereum:
+  chain_id: 137
+  rpc_address: 'https://rpc-mainnet.maticvigil.com/v1/f632570838c8d7c5e5c508c6f24a0e23eabac8c7'
+  git_factory_address: '0x5DD6E7D5F20a3ae586cFf4a03A54e51c32F02541'
+  mumbai_gas_station: 'https://gasstation-mumbai.matic.today'
+  ipfs_connection: '/dns4/ipfs.infura.io/tcp/5001/https'
