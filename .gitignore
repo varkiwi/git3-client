@@ -3,6 +3,10 @@ dist
 *.egg-info
 __pycache__
 
+node_modules
+download.js
+package*.json
+
 mumbaiTestRepo
 newRepo
 newTest

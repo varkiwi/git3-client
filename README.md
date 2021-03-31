@@ -83,3 +83,19 @@ If you want to merge the state after doing a fetch, just use `git3 merge`. It wi
 
 User address: `0x0539E6a1093a359C5720d053DB5e3D277F1762B6`
 Repository name: `firstMainNetRepo`
+
+# Local development
+
+## Create local environment
+I used `virtualenv` to create a virtual environment: `virtualenv --python path/to/python/3.8 [name]`
+
+Activate the virtual environment: `source [name]/bin/activate`
+
+Install requirements: `pip install -r requirements.txt`
+
+Install the git3 client in the virtual environment: `python setup.py install`
+
+To deactivate the virtual environment, just type `deactivate`
+
+Install git3 in virtual environment: `python setup.py install`
+

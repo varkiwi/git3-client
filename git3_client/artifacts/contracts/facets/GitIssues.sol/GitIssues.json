@@ -1,0 +1,188 @@
+{
+  "contractName": "GitIssues",
+  "sourceName": "contracts/facets/GitIssues.sol",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "Cid",
+          "type": "string"
+        }
+      ],
+      "name": "NewIssue",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "issueHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "string",
+          "name": "issueAnswerCid",
+          "type": "string"
+        }
+      ],
+      "name": "appendAnswerToIssue",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getAllIssues",
+      "outputs": [
+        {
+          "internalType": "bytes32[]",
+          "name": "",
+          "type": "bytes32[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "userCidHash",
+          "type": "bytes32"
+        }
+      ],
+      "name": "getIssue",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "enum GitIssues.IssueState",
+              "name": "state",
+              "type": "uint8"
+            },
+            {
+              "internalType": "string",
+              "name": "cid",
+              "type": "string"
+            },
+            {
+              "components": [
+                {
+                  "internalType": "string",
+                  "name": "cid",
+                  "type": "string"
+                },
+                {
+                  "internalType": "address",
+                  "name": "author",
+                  "type": "address"
+                }
+              ],
+              "internalType": "struct GitIssues.IssueText[]",
+              "name": "issueAnswers",
+              "type": "tuple[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "bounty",
+              "type": "uint256"
+            },
+            {
+              "internalType": "address",
+              "name": "opener",
+              "type": "address"
+            },
+            {
+              "internalType": "address",
+              "name": "resolver",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "resolvedBlockNumber",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "resolved",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "placeInList",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct GitIssues.Issue",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "opener",
+          "type": "address"
+        },
+        {
+          "internalType": "string",
+          "name": "cid",
+          "type": "string"
+        }
+      ],
+      "name": "getUserCidHash",
+      "outputs": [
+        {
+          "internalType": "bytes32",
+          "name": "",
+          "type": "bytes32"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "issueCid",
+          "type": "string"
+        }
+      ],
+      "name": "openIssue",
+      "outputs": [],
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes32",
+          "name": "issueHash",
+          "type": "bytes32"
+        },
+        {
+          "internalType": "enum GitIssues.IssueState",
+          "name": "state",
+          "type": "uint8"
+        }
+      ],
+      "name": "updateIssueState",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ]
+}

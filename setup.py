@@ -1,14 +1,14 @@
-from setuptools import setup
+from setuptools import setup, find_packages
  
 readme = open('README.md', 'r')
 content = readme.read()
 readme.close()
- 
+
 setup(
     name = "git3-client",
-    packages = ["git3-client"],
+    packages = find_packages('.'),
     entry_points = {
-        "console_scripts": ['git3 = git3-client.git3:main']
+        "console_scripts": ['git3=git3_client.git3:main']
     },
     version = "0.1.5",
     description = "Git3 Python client",
