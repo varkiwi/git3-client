@@ -1,12 +1,14 @@
 import os
 
+from git3_client.utils.utils import write_file
+
 def init(repo):
     """
     Function for the git init command. It creats a .git directory for repository and fills it with git related
     directories and files.
     """
     if os.path.exists(os.path.join(repo, '.git')):
-        print('.git folder exists already')
+        print(f"Repository {repo} exists already")
         return
 
     cwd = os.getcwd()

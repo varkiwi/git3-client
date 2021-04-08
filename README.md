@@ -36,7 +36,7 @@ The `0x20` at position 6 says, that the following data is 32 bytes long and this
 Better tooling is still required :)
 
 ### Git config file
-The git3 client needs to know the author's name, email address and where to find the private key. Therefore you can use either the global `.gitconfig` file or a config file stored in the repository in the `.git` folder.
+The git3 client needs to know the author's name, email address and where to find the private key. Therefore you can use either the global `.gitconfig` file or a config file stored in the repository in the `.git` folder (`[repositoryName]/.git/config`). 
 
 #### Gitconfig
 Here is how the contant of the `~/.gitconfig` file looks like
@@ -44,7 +44,7 @@ Here is how the contant of the `~/.gitconfig` file looks like
 [user]
         email = author email
         name = author name
-        IdentityFile = path to private key in pem format
+        IdentityFile = path to private key in pem format. It has to be the absolute path! No $HOME or similar stuff in it
 ```
 Set the values according to your needs.
 
@@ -56,6 +56,9 @@ If you want to use a different configuration for each repository, just add a `co
 ## Git init
 To create a new local repository, you have to call `git3 init [name]`
 You can either provide a name for the repository or just call it without a name. In case you don't provide a name, the repository is initialized in the current directory you are in.
+
+## Git get-address
+In case you want to know the Ethereum based address derived form yuor private key, use the `git3 get-address` command. It will derive the Ethereum address from the IdentityFile specified in the config file and show it to you.
 
 ## Git add
 To add a file to your repository, just use `git3 add file_name`

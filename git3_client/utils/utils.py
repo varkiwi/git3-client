@@ -1,4 +1,4 @@
-import os, requests, zlib
+import os, requests, zlib, sys
 
 from pathlib import Path
 from Crypto.PublicKey import ECC
@@ -63,7 +63,12 @@ def get_private_key():
     if identity_file_path == None:
         print('No identity file provided. Please provide an identity file on your config file')
         sys.exit(1)
-    content = read_file(os.path.expanduser(identity_file_path))
+    try:
+        content = read_file(os.path.expanduser(identity_file_path))
+    except FileNotFoundError as fnfe:
+        print(fnfe)
+        sys.exit(1)
+
     password = ''
     try:
         key = ECC.import_key(content)
