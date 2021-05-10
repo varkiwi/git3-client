@@ -7,7 +7,7 @@ from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
 from git3_client.exceptions.NoRepositoryError import NoRepositoryError
-from git3_client.utils.utils import get_repo_root_path, read_file, write_file
+from git3_client.utils.utils import get_repo_root_path, read_file, write_file, get_local_master_hash
 
 def get_status():
     """

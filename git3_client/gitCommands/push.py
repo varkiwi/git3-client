@@ -1,7 +1,12 @@
+import ipfshttpclient
+
 from git3_client.dlt.repository import check_if_repo_created, push_commit, push_new_cid
 
 from git3_client.utils.utils import get_local_master_hash
 from git3_client.dlt.repository import check_if_remote_ahead, get_remote_master_hash
+
+IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
+client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def push():
     """Push master branch to given git repo URL.""" 
@@ -25,6 +30,7 @@ def push():
        return
     print('Pushing files to IPFS')
     master_cid = push_commit(local_sha1, remote_sha1, remote_cid)
+    print('Master_cid: ', master_cid)
     if master_cid == remote_cid:
         print('Everything up-to-date')
     else:

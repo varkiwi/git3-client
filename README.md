@@ -74,6 +74,9 @@ In order to be able to push, a smart contract is required. If you haven't regist
 ## Git create
 In order to have a remote repository, you have to register your repository. Use the `git3 create` command. It sends a transaction to the factory contract, which deployes a new smart contract for your repository. Once this is done, you are able to push your repository.
 
+## Git clone
+git3 clone 0xE838bC8b2D069CE43894143836fA974643646291/newTestRepo
+
 ## Git fetch
 In order to download the remote state, use `git3 fetch`.
 

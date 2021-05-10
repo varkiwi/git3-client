@@ -1,4 +1,4 @@
-import os
+import os, operator
 
 from git3_client.exceptions.NoRepositoryError import NoRepositoryError
 

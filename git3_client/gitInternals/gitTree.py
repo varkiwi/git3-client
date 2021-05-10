@@ -1,4 +1,5 @@
-import binascii, os
+import binascii, os, zlib
+import ipfshttpclient
 
 from .IndexEntry import IndexEntry
 from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
@@ -7,6 +8,9 @@ from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 from .gitObject import read_object
 
 from git3_client.utils.utils import write_file
+
+IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
+client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def find_tree_objects(tree_sha1):
     """Return set of SHA-1 hashes of all objects in this tree (recursively),

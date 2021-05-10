@@ -16,6 +16,23 @@ setup(
     long_description_content_type="text/markdown",
     author = "Jacek Varky",
     author_email = "jaca347@gmail.com",
+    data_files=[('git3_client/artifacts/contracts/', [
+        'git3_client/artifacts/contracts/GitFactory.sol/GitFactory.json',
+        'git3_client/artifacts/contracts/GitRepository.sol/GitRepository.json',
+        'git3_client/artifacts/contracts/facets/DiamondCutFacet.sol/DiamondCutFacet.json',
+        'git3_client/artifacts/contracts/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json',
+        'git3_client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
+        'git3_client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
+        'git3_client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json'
+    ]),
+    # ('git3_client/artifacts/contracts/facets', [
+    #     'git3_client/artifacts/contracts/facets/DiamondCutFacet.sol/DiamondCutFacet.json',
+    #     'git3_client/artifacts/contracts/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json',
+    #     'git3_client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
+    #     'git3_client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
+    #     'git3_client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json'
+    # ])
+    ],
     install_requires=[
         'attrs==20.2.0',
         'base58==2.0.1',

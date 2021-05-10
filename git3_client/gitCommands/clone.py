@@ -1,11 +1,14 @@
 import binascii, os
 
-from git3_client.dlt.contract import get_factory_contract, get_repository_contract
+from git3_client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
 from git3_client.dlt.repository import get_all_remote_commits
 
-from gitCommands.init import init
+from git3_client.gitCommands.init import init
+from git3_client.gitCommands.add import add
 
 from git3_client.gitInternals.gitCommit import unpack_files_of_commit
+
+from git3_client.utils.utils import write_file
 
 def clone(repo_name):
     """
@@ -13,22 +16,25 @@ def clone(repo_name):
 
     repo_name: Repository to be cloned
     """
-    # 0x0539E6a1093a359C5720d053DB5e3D277F1762B6/mumbaiTestRepo
+    # git3 clone 0xE838bC8b2D069CE43894143836fA974643646291/repoDeppo
     user_address, repo_name = repo_name.split('/')
 
     git_factory = get_factory_contract()
     user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
     user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
-    repository = git_factory.functions.repositoryList(user_key).call()
+
+    # repository = git_factory.functions.repositoryList(user_key).call()
+    repository = git_factory.functions.getRepository(user_key).call()
 
     if not repository[0] or repository[1] != repo_name:
         print('No such repository')
         return
     git_repo_address = repository[2]
-    repo_contract = get_repository_contract(git_repo_address)
-    branch = repo_contract.functions.branches('main').call()
+    # branch_contract = get_repository_contract(git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address)
+    # branch = branch_contract.functions.branches('main').call()
+    branch = branch_contract.functions.getBranch('main').call()
     headCid = branch[1]
-
     print('Cloning {:s}'.format(repo_name))
     # initialize repository
     init(repo_name)
@@ -44,6 +50,7 @@ def clone(repo_name):
     write_file(master_path, (all_commits[0]['sha1'] + '\n').encode())
     #chaning into repo, also for add function, in order to find the index file
     os.chdir(repo_name)
+    write_file(os.path.join('.git', 'name'), str.encode('location: ' + user_key))
     # collecting all files from the repo in order to create the index file
     files_to_add = []
     for path, subdirs, files in os.walk('.'):

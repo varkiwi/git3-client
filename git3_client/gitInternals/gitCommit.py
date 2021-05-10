@@ -1,9 +1,13 @@
-import os
+import os, zlib
+import ipfshttpclient
 
 from .gitObject import read_object
 from .gitTree import find_tree_objects, unpack_files_of_tree
 
 from git3_client.utils.utils import write_file
+
+IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
+client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def find_commit_objects(commit_sha1):
     """Return set of SHA-1 hashes of all objects in this commit (recursively),
@@ -23,6 +27,7 @@ def find_commit_objects(commit_sha1):
 def get_all_local_commits(commit_hash):
     """
     Returns a list contains all hashes of the local commits
+    starting from the given parameter commit_hash
     """
     all_commits = []
     parents = []

@@ -16,6 +16,7 @@ from git3_client.exceptions import NoRepositoryError
 
 from git3_client.gitCommands.add import add
 from git3_client.gitCommands.catFile import cat_file
+from git3_client.gitCommands.clone import clone
 from git3_client.gitCommands.commit import commit
 from git3_client.gitCommands.create import create
 from git3_client.gitCommands.diff import diff
@@ -33,12 +34,12 @@ from git3_client.utils.utils import read_file
 
 MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
 # this is mumbai testnet
-# CHAINID=80001
+CHAINID=80001
 # RPC_ADDRESS = 'https://rpc-mumbai.matic.today'
 # GIT_FACTORY_ADDRESS = '0x6AB62795EC9BD442461319E2113d21c1Ba278a71'
 
 # this is matic mainnet
-CHAINID=137
+#CHAINID=137
 RPC_ADDRESS = 'https://rpc-mainnet.maticvigil.com/v1/f632570838c8d7c5e5c508c6f24a0e23eabac8c7'
 GIT_FACTORY_ADDRESS = '0x5DD6E7D5F20a3ae586cFf4a03A54e51c32F02541'
 
@@ -50,6 +51,7 @@ client = None
 def connect_to_infura():
     global client
     client = ipfshttpclient.connect(IPFS_CONNECTION)
+    return client
 
 def close_to_infura():
     global client

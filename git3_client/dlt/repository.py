@@ -1,6 +1,7 @@
-import binascii
+import binascii, os
+import ipfshttpclient
 
-from git3_client.dlt.contract import get_factory_contract, get_repository_contract
+from git3_client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
 from git3_client.dlt.provider import get_web3_provider
 from git3_client.dlt.user import get_user_dlt_address
 
@@ -8,8 +9,11 @@ from git3_client.gitInternals.gitObject import read_object
 from git3_client.gitInternals.gitTree import read_tree
 from git3_client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
-from git3_client.utils.utils import read_repo_name, get_current_gas_price
+from git3_client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path
 
+CHAINID = 80001
+IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
+client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def get_remote_cid_history():
     """
@@ -25,21 +29,26 @@ def get_remote_cid_history():
 def push_new_cid(cid):
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
+    if not repo_name.startswith('location:'):
+        # Need to check if the return is handled by the calling function
+        print('.git/name file has an error. Exiting...')
+        return False
+    user_key = repo_name.split('location:')[1].strip()
     user_address = get_user_dlt_address()
 
-    user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
-    user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
-    repository = git_factory.functions.repositoryList(user_key).call()
+    repository = git_factory.functions.getRepository(user_key).call()
 
     git_repo_address = repository[2]
-    repo_contract = get_repository_contract(git_repo_address)
+    #repo_contract = get_repository_contract(git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address)
     w3 = get_web3_provider()
 
     # user_address = get_user_dlt_address()
     nonce = w3.eth.getTransactionCount(user_address)
 
     gas_price = get_current_gas_price()
-    create_push_tx = repo_contract.functions.push('main', cid).buildTransaction({
+    #create_push_tx = repo_contract.functions.push('main', cid).buildTransaction({
+    create_push_tx = branch_contract.functions.push('main', cid).buildTransaction({
         'chainId': CHAINID,
         'gas': 746427,
         'gasPrice': w3.toWei(gas_price, 'gwei'),
@@ -68,6 +77,7 @@ def check_if_remote_ahead(remote_sha1):
     path_to_check = os.path.join(root_path, '.git', 'objects', remote_sha1[:2], remote_sha1[2:])
     return not os.path.isfile(path_to_check) 
 
+#TODO: parameter repo_name can be removed I guess
 def get_all_remote_commits(commit_cid, repo_name):
     """
     Gets all remote commits and returns those in a list
@@ -87,17 +97,22 @@ def check_if_repo_created():
     If it hasn't, False is returned, otherwise True
     """
     repo_name = read_repo_name()
+    if not repo_name.startswith('location:'):
+        return False
+    user_key = repo_name.split('location:')[1].strip()
+
     w3 = get_web3_provider()
     if not w3.isConnected():
         #TODO: Throw an exception
         print('No connection. Establish a connection first')
         return False
     git_factory = get_factory_contract()
-    user_address = get_user_dlt_address()
-    user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
-    user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
-    repository = git_factory.functions.repositoryList(user_key).call()
-    return repository[0]
+    # repoName = 'newRepo'
+    # user_address = get_user_dlt_address()
+    # user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
+    # user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
+    # print(user_key)
+    return git_factory.functions.getRepository(user_key).call()[0]
 
 def get_remote_master_hash():
     """
@@ -105,20 +120,25 @@ def get_remote_master_hash():
     """
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
-    user_address = get_user_dlt_address()
+    if not repo_name.startswith('location:'):
+        return
+    user_key = repo_name.split('location:')[1].strip()
+    # user_address = get_user_dlt_address()
 
-    user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
-    user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
-    repository = git_factory.functions.repositoryList(user_key).call()
+    # user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
+    # user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
+    repository = git_factory.functions.getRepository(user_key).call()
     
     if not repository[0]:
         print('No such repository')
         return
     git_repo_address = repository[2]
-    repo_contract = get_repository_contract(git_repo_address)
-    # headCid = repo_contract.functions.headCid().call()
+    branch_contract = get_facet_contract("GitBranch", git_repo_address)
     #TODO: Branch name
-    branch = repo_contract.functions.branches('main').call()
+    branch = branch_contract.functions.getBranch('main').call()
+    #repo_contract = get_repository_contract(git_repo_address)
+    # headCid = repo_contract.functions.headCid().call()
+    #branch = repo_contract.functions.branches('main').call()
     # check if the branch is active
     if not branch[0]:
         return None

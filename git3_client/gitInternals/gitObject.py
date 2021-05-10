@@ -1,4 +1,4 @@
-import os, zlib
+import os, zlib, hashlib
 
 from git3_client.exceptions.NoRepositoryError import NoRepositoryError
 

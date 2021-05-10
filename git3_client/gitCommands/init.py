@@ -27,6 +27,6 @@ def init(repo):
     write_file(os.path.join(repo, '.git', 'HEAD'), b'ref: refs/heads/master')
 
     # write the name of the repository into a file
-    write_file(os.path.join(repo, '.git', 'name'), str.encode(repoName))
-        
+    write_file(os.path.join(repo, '.git', 'name'), str.encode('name: ' + repoName))
+    
     print('Initialized empty Git3 repository in: {}/.git/'.format(fullPath))
