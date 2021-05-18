@@ -10,7 +10,7 @@ setup(
     entry_points = {
         "console_scripts": ['git3=git3_client.git3:main']
     },
-    version = "0.1.5",
+    version = "0.0.1",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
@@ -73,7 +73,7 @@ setup(
         'websockets==8.1',
         'zipp==3.3.1',
       ],
-    url = "https://github.com/jacekv/git3",
+    url = "https://github.com/varkiwi/git3-client",
     classifiers=[
         "Development Status :: 3 - Alpha",
     ],
