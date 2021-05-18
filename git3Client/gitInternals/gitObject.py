@@ -1,11 +1,11 @@
 import os, zlib, hashlib
 
-from git3_client.exceptions.NoRepositoryError import NoRepositoryError
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
 # from .gitTree import read_tree
 from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
-from git3_client.utils.utils import get_repo_root_path, read_file, write_file
+from git3Client.utils.utils import get_repo_root_path, read_file, write_file
 
 def find_missing_objects(local_sha1, remote_sha1):
     """Return set of SHA-1 hashes of objects in local commit that are missing

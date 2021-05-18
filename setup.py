@@ -5,34 +5,23 @@ content = readme.read()
 readme.close()
 
 setup(
-    name = "git3-client",
-    packages = find_packages('.'),
-    entry_points = {
-        "console_scripts": ['git3=git3_client.git3:main']
+    name = "git3Client",
+    packages = find_packages('.'), #["git3Client"],
+    package_data = {
+        'artifacts': ['*.json']
     },
-    version = "0.0.1",
+    include_package_data = True,
+    entry_points = {
+        "console_scripts": [
+            "git3 = git3Client.__main__:run",
+        ]
+    },
+    version = "0.0.21",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
     author = "Jacek Varky",
     author_email = "jaca347@gmail.com",
-    data_files=[('git3_client/artifacts/contracts/', [
-        'git3_client/artifacts/contracts/GitFactory.sol/GitFactory.json',
-        'git3_client/artifacts/contracts/GitRepository.sol/GitRepository.json',
-        'git3_client/artifacts/contracts/facets/DiamondCutFacet.sol/DiamondCutFacet.json',
-        'git3_client/artifacts/contracts/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json',
-        'git3_client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
-        'git3_client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
-        'git3_client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json'
-    ]),
-    # ('git3_client/artifacts/contracts/facets', [
-    #     'git3_client/artifacts/contracts/facets/DiamondCutFacet.sol/DiamondCutFacet.json',
-    #     'git3_client/artifacts/contracts/facets/DiamondLoupeFacet.sol/DiamondLoupeFacet.json',
-    #     'git3_client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
-    #     'git3_client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
-    #     'git3_client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json'
-    # ])
-    ],
     install_requires=[
         'attrs==20.2.0',
         'base58==2.0.1',
@@ -50,7 +39,7 @@ setup(
         'eth-utils==1.9.5',
         'hexbytes==0.2.1',
         'idna==2.10',
-        'importlib-metadata==2.0.0',
+        'importlib-metadata==4.0.1',
         'importlib-resources==3.0.0',
         'ipfshttpclient==0.7.0a1',
         'jsonschema==3.2.0',

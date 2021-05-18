@@ -1,12 +1,12 @@
 import binascii, os
 
-from git3_client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
-from git3_client.dlt.repository import get_all_remote_commits
-from git3_client.dlt.user import get_user_dlt_address
+from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.repository import get_all_remote_commits
+from git3Client.dlt.user import get_user_dlt_address
 
-from git3_client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_tree, unpack_files_of_commit
+from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_tree, unpack_files_of_commit
 
-from git3_client.utils.utils import read_repo_name, get_local_master_hash, get_repo_root_path, write_file
+from git3Client.utils.utils import read_repo_name, get_local_master_hash, get_repo_root_path, write_file
 
 def fetch():
     """

@@ -1,9 +1,9 @@
 import difflib
 
-from git3_client.gitInternals.gitIndex import get_status, read_index
-from git3_client.gitInternals.gitObject import read_object
+from git3Client.gitInternals.gitIndex import get_status, read_index
+from git3Client.gitInternals.gitObject import read_object
 
-from git3_client.utils.utils import read_file
+from git3Client.utils.utils import read_file
 
 def diff():
     """Show diff of files changed (between index and working copy)."""

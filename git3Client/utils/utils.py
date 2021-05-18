@@ -3,7 +3,7 @@ import os, requests, zlib, sys
 from pathlib import Path
 from Crypto.PublicKey import ECC
 
-from git3_client.exceptions import NoRepositoryError
+from git3Client.exceptions import NoRepositoryError
 
 MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
 

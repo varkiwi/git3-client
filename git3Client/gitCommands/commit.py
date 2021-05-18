@@ -1,10 +1,10 @@
 import os, time
 
-from git3_client.gitInternals.gitIndex import read_index
-from git3_client.gitInternals.gitObject import hash_object
-from git3_client.gitInternals.gitTree import write_tree
+from git3Client.gitInternals.gitIndex import read_index
+from git3Client.gitInternals.gitObject import hash_object
+from git3Client.gitInternals.gitTree import write_tree
 
-from git3_client.utils.utils import get_local_master_hash, get_repo_root_path, get_value_from_config_file, read_file, write_file
+from git3Client.utils.utils import get_local_master_hash, get_repo_root_path, get_value_from_config_file, read_file, write_file
 
 def commit(message, author=None, parent1=None, parent2=None):
     """Commit the current state of the index to master with given message.

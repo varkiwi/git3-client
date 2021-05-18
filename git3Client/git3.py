@@ -1,36 +1,30 @@
 #!/usr/bin/env python3
-"""Implement just enough git to commit and push to GitHub.
 
-Read the story here: http://benhoyt.com/writings/pygit/
-
-Released under a permissive MIT license (see LICENSE.txt).
-"""
 # from eth_account import Account
-from getpass import getpass
-import argparse, os, stat
-import sys, time
+import argparse
+import sys
 import ipfshttpclient
 
-from git3_client.exceptions import NoRepositoryError
-#from git3_client.gitInternals.gitObject import hash_object
+from git3Client.exceptions import NoRepositoryError
+#from git3Client.gitInternals.gitObject import hash_object
 
-from git3_client.gitCommands.add import add
-from git3_client.gitCommands.catFile import cat_file
-from git3_client.gitCommands.clone import clone
-from git3_client.gitCommands.commit import commit
-from git3_client.gitCommands.create import create
-from git3_client.gitCommands.diff import diff
-from git3_client.gitCommands.fetch import fetch
-from git3_client.gitCommands.getAddress import getAddress
-from git3_client.gitCommands.hashObject import hashObject
-from git3_client.gitCommands.init import init
-from git3_client.gitCommands.lsFiles import ls_files
-from git3_client.gitCommands.merge import merge
-from git3_client.gitCommands.push import push
-from git3_client.gitCommands.pull import pull
-from git3_client.gitCommands.status import status
+from git3Client.gitCommands.add import add
+from git3Client.gitCommands.catFile import cat_file
+from git3Client.gitCommands.clone import clone
+from git3Client.gitCommands.commit import commit
+from git3Client.gitCommands.create import create
+from git3Client.gitCommands.diff import diff
+from git3Client.gitCommands.fetch import fetch
+from git3Client.gitCommands.getAddress import getAddress
+from git3Client.gitCommands.hashObject import hashObject
+from git3Client.gitCommands.init import init
+from git3Client.gitCommands.lsFiles import ls_files
+from git3Client.gitCommands.merge import merge
+from git3Client.gitCommands.push import push
+from git3Client.gitCommands.pull import pull
+from git3Client.gitCommands.status import status
 
-from git3_client.utils.utils import read_file
+from git3Client.utils.utils import read_file
 
 MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
 # this is mumbai testnet
@@ -192,6 +186,3 @@ def main():
         status()
     else:
         assert False, 'unexpected command {!r}'.format(args.command)
-
-if __name__ == '__main__':
-    main()

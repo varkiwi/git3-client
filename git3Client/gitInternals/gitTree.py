@@ -7,7 +7,7 @@ from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 # from .gitObject import hash_object, read_object
 from .gitObject import read_object
 
-from git3_client.utils.utils import write_file
+from git3Client.utils.utils import write_file
 
 IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
 client = ipfshttpclient.connect(IPFS_CONNECTION)

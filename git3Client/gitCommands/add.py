@@ -1,13 +1,13 @@
 import os, operator
 
-from git3_client.exceptions.NoRepositoryError import NoRepositoryError
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3_client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE
-from git3_client.gitInternals.gitIndex import read_index, write_index
-from git3_client.gitInternals.gitObject import hash_object
-from git3_client.gitInternals.IndexEntry import IndexEntry
+from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE
+from git3Client.gitInternals.gitIndex import read_index, write_index
+from git3Client.gitInternals.gitObject import hash_object
+from git3Client.gitInternals.IndexEntry import IndexEntry
 
-from git3_client.utils.utils import get_repo_root_path, read_file
+from git3Client.utils.utils import get_repo_root_path, read_file
 
 def add(paths):
     """Add all file paths to git index."""

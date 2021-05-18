@@ -1,14 +1,14 @@
 import binascii, os
 
-from git3_client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
-from git3_client.dlt.repository import get_all_remote_commits
+from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.repository import get_all_remote_commits
 
-from git3_client.gitCommands.init import init
-from git3_client.gitCommands.add import add
+from git3Client.gitCommands.init import init
+from git3Client.gitCommands.add import add
 
-from git3_client.gitInternals.gitCommit import unpack_files_of_commit
+from git3Client.gitInternals.gitCommit import unpack_files_of_commit
 
-from git3_client.utils.utils import write_file
+from git3Client.utils.utils import write_file
 
 def clone(repo_name):
     """

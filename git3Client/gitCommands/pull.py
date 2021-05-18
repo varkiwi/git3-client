@@ -1,12 +1,12 @@
 import os
 
-from git3_client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
-from git3_client.dlt.repository import get_all_remote_commits
+from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.repository import get_all_remote_commits
 
-from git3_client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
-from git3_client.gitInternals.gitIndex import get_status, is_stage_empty
+from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
+from git3Client.gitInternals.gitIndex import get_status, is_stage_empty
 
-from git3_client.utils.utils import read_repo_name, get_repo_root_path, read_file, write_file
+from git3Client.utils.utils import read_repo_name, get_repo_root_path, read_file, write_file
 
 def pull():
     print('Pulling')

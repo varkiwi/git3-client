@@ -1,4 +1,4 @@
-from git3_client.gitInternals.gitIndex import get_status
+from git3Client.gitInternals.gitIndex import get_status
 
 def status():
     """Show status of working copy."""

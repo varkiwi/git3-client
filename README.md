@@ -105,3 +105,10 @@ To deactivate the virtual environment, just type `deactivate`
 
 Install git3 in virtual environment: `python setup.py install`
 
+## How to push to PyPi
+
+In the active virtual env, execute the following: `python setup.py sdist bdist_wheel`
+This will create a dist folder. Once done, you can publish to Pypi using twine (pip3 install twine)
+`twine upload dist/*` - enter credentials and that's it. After that you should be able to install your package 
+using pip3 install [name]
+

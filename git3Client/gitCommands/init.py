@@ -1,6 +1,6 @@
 import os
 
-from git3_client.utils.utils import write_file
+from git3Client.utils.utils import write_file
 
 def init(repo):
     """

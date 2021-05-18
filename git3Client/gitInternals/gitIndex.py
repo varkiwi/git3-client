@@ -6,8 +6,8 @@ from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
-from git3_client.exceptions.NoRepositoryError import NoRepositoryError
-from git3_client.utils.utils import get_repo_root_path, read_file, write_file, get_local_master_hash
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
+from git3Client.utils.utils import get_repo_root_path, read_file, write_file, get_local_master_hash
 
 def get_status():
     """

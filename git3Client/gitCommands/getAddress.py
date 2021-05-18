@@ -1,4 +1,4 @@
-from git3_client.dlt.user import get_user_dlt_address
+from git3Client.dlt.user import get_user_dlt_address
 
 def getAddress():
     """

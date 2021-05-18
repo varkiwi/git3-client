@@ -1,6 +1,6 @@
 from eth_account import Account
 
-from git3_client.utils.utils import get_private_key
+from git3Client.utils.utils import get_private_key
 
 def get_user_dlt_address():
     print('Getting users web3 address')

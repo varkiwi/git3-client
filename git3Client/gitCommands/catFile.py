@@ -1,7 +1,7 @@
 import stat, sys
 
-from git3_client.gitInternals.gitObject import read_object
-from git3_client.gitInternals.gitTree import read_tree
+from git3Client.gitInternals.gitObject import read_object
+from git3Client.gitInternals.gitTree import read_tree
 
 def cat_file(mode, sha1_prefix):
     """Write the contents of (or info about) object with given SHA-1 prefix to

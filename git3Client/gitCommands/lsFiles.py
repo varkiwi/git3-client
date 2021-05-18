@@ -1,4 +1,4 @@
-from git3_client.gitInternals.gitIndex import read_index
+from git3Client.gitInternals.gitIndex import read_index
 
 def ls_files(details=False):
     """Print list of files in index (including mode, SHA-1, and stage number
