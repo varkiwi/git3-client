@@ -6,7 +6,7 @@ readme.close()
 
 setup(
     name = "git3Client",
-    packages = find_packages('.'), #["git3Client"],
+    packages = find_packages('.'),
     package_data = {
         'artifacts': ['*.json']
     },
@@ -16,7 +16,7 @@ setup(
             "git3 = git3Client.__main__:run",
         ]
     },
-    version = "0.0.21",
+    version = "0.0.1",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
