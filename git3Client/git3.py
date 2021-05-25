@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
 
-# from eth_account import Account
 import argparse
 import sys
-import ipfshttpclient
-
-from git3Client.exceptions import NoRepositoryError
-#from git3Client.gitInternals.gitObject import hash_object
 
 from git3Client.gitCommands.add import add
 from git3Client.gitCommands.catFile import cat_file
@@ -25,31 +20,6 @@ from git3Client.gitCommands.pull import pull
 from git3Client.gitCommands.status import status
 
 from git3Client.utils.utils import read_file
-
-MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
-# this is mumbai testnet
-CHAINID=80001
-# RPC_ADDRESS = 'https://rpc-mumbai.matic.today'
-# GIT_FACTORY_ADDRESS = '0x6AB62795EC9BD442461319E2113d21c1Ba278a71'
-
-# this is matic mainnet
-#CHAINID=137
-RPC_ADDRESS = 'https://rpc-mainnet.maticvigil.com/v1/f632570838c8d7c5e5c508c6f24a0e23eabac8c7'
-GIT_FACTORY_ADDRESS = '0x5DD6E7D5F20a3ae586cFf4a03A54e51c32F02541'
-
-IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
-
-#used as global ipfshttpclient
-client = None
-
-def connect_to_infura():
-    global client
-    client = ipfshttpclient.connect(IPFS_CONNECTION)
-    return client
-
-def close_to_infura():
-    global client
-    client.close()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -154,15 +124,11 @@ def main():
     elif args.command == 'create':
         create()
     elif args.command == 'clone':
-        connect_to_infura()
         clone(args.name)
-        close_to_infura()
     elif args.command == 'diff':
         diff()
     elif args.command == 'fetch':
-        connect_to_infura()
         fetch()
-        close_to_infura()
     elif args.command == 'get-address':
         address = getAddress()
         print('Your address is: {}'.format(address))
@@ -175,13 +141,9 @@ def main():
     elif args.command == 'merge':
         merge()
     elif args.command == 'push':
-        connect_to_infura()
         push()
-        close_to_infura()
     elif args.command == 'pull':
-        connect_to_infura()
         pull()
-        close_to_infura()
     elif args.command == 'status':
         status()
     else:

@@ -1,9 +1,9 @@
 from .provider import get_web3_provider
 
-import json
-import pkg_resources
+from git3Client.config.config import GIT_FACTORY_ADDRESS
 
-GIT_FACTORY_ADDRESS = '0x5545fc8e2cc3815e351E37C6F2f372e2A878E364'
+import json
+import os
 
 def read_contract_abi(contractName):
     """
@@ -13,14 +13,17 @@ def read_contract_abi(contractName):
 
     returns: abi
     """
-    if contractName == "GitFactory" or contractName == "GitRepository":
-        path = f"../artifacts/contracts/{contractName}.sol/{contractName}.json"
-    else:
-        path = f"../artifacts/contracts/facets/{contractName}.sol/{contractName}.json"
-    
-    contract_data = pkg_resources.resource_string(__name__, path)
-    data = json.loads(contract_data) 
+    real_path = os.path.realpath(__file__).split('/')
+    real_path[-2] = 'artifacts'
+    real_path[-1] = 'contracts'
 
+    if contractName is not "GitFactory" and contractName is not "GitRepository":
+        real_path.append('facets')
+
+    abi_path = '/'.join(real_path)
+
+    with open(f"{abi_path}/{contractName}.sol/{contractName}.json", "r") as f:
+        data = json.load(f)
     return data['abi']
 
 def get_factory_contract():
