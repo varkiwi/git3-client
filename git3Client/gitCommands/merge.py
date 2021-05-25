@@ -2,6 +2,8 @@ import difflib, os
 
 from git3Client.dlt.contract import get_factory_contract
 
+from git3Client.gitCommands.add import add
+
 from git3Client.gitInternals.gitCommit import get_all_local_commits
 from git3Client.gitInternals.gitObject import read_object, unpack_object
 from git3Client.gitInternals.gitTree import get_subtree_entries
@@ -137,8 +139,8 @@ def merge():
                     user_key = repo_name.split('location:')[1].strip()
                     git_factory = get_factory_contract()
                     # git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
-                    git_repo_address = git_factory.functions.gitRepositories(user_key).call()
-                    write_file(path, 'Merge branch \'main\' of {} into main\n\n# Conflicts\n# \t{}\n'.format(git_repo_address, f).encode())
+                    repository = git_factory.functions.getRepository(user_key).call()
+                    write_file(path, 'Merge branch \'main\' of {} into main\n\n# Conflicts\n# \t{}\n'.format(repository[2], f).encode())
 
     # adding all the files to the index. TODO: can be more efficient if we add it to the previous loop
     files_to_add = []

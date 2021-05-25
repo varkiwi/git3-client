@@ -26,7 +26,8 @@ def push():
        print('Everything up-to-date')
        return
     elif check_if_remote_ahead(remote_sha1):
-       print('Remote repository is ahead. Pull the changes first')
+       #print('Remote repository is ahead. Pull the changes first')
+       print('Remote repository is ahead. Fetch and merge the changes first')
        return
     print('Pushing files to IPFS')
     master_cid = push_commit(local_sha1, remote_sha1, remote_cid)

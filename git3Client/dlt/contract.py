@@ -1,7 +1,6 @@
 from .provider import get_web3_provider
-from git3Client.exceptions import NoABIFoundError
+
 import json
-import os
 import pkg_resources
 
 GIT_FACTORY_ADDRESS = '0x5545fc8e2cc3815e351E37C6F2f372e2A878E364'
@@ -14,22 +13,14 @@ def read_contract_abi(contractName):
 
     returns: abi
     """
-    # import pkgutil
     if contractName == "GitFactory" or contractName == "GitRepository":
         path = f"../artifacts/contracts/{contractName}.sol/{contractName}.json"
     else:
         path = f"../artifacts/contracts/facets/{contractName}.sol/{contractName}.json"
-    contract_data = pkg_resources.resource_string(__name__, path)
-    # real_path = os.path.realpath(__file__).split('/')
-    # #TODO: add rest of the path to it. we are currently at git3_client
-    # # we replace here dlt/contract.py in the path with the location of the contracts
-    # real_path[-2] = 'artifacts'
-    # real_path[-1] = 'contracts'
-    # abi_path = '/'.join(real_path)
     
-    # with open(f"{abi_path}/{contractName}.json", "r") as f:
-    #     data = json.load(f)
-    data = json.loads(contract_data)
+    contract_data = pkg_resources.resource_string(__name__, path)
+    data = json.loads(contract_data) 
+
     return data['abi']
 
 def get_factory_contract():
