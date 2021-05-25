@@ -130,8 +130,14 @@ def merge():
                         f.write('# \t{}'.format(f))
                 else:
                     repo_name = read_repo_name()
+                    if not repo_name.startswith('location:'):
+                        # Need to check if the return is handled by the calling function
+                        print('.git/name file has an error. Exiting...')
+                        return False
+                    user_key = repo_name.split('location:')[1].strip()
                     git_factory = get_factory_contract()
-                    git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
+                    # git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
+                    git_repo_address = git_factory.functions.gitRepositories(user_key).call()
                     write_file(path, 'Merge branch \'main\' of {} into main\n\n# Conflicts\n# \t{}\n'.format(git_repo_address, f).encode())
 
     # adding all the files to the index. TODO: can be more efficient if we add it to the previous loop

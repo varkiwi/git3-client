@@ -16,7 +16,7 @@ setup(
             "git3 = git3Client.__main__:run",
         ]
     },
-    version = "0.0.1",
+    version = "0.1.1",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
