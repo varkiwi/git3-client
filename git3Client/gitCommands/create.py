@@ -1,12 +1,14 @@
 import binascii, os
 
+from git3Client.config.config import CHAINID
+
 from git3Client.dlt.contract import get_factory_contract
 from git3Client.dlt.provider import get_web3_provider
 from git3Client.dlt.user import get_user_dlt_address
 
 from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, write_file
 
-CHAINID=80001
+# CHAINID=80001
 # this is matic mainnet
 # CHAINID=137
 

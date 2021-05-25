@@ -1,9 +1,7 @@
 from web3 import Web3
 
-# RPC_ADDRESS = 'https://rpc-mumbai.matic.today'
+from git3Client.config.config import RPC_ADDRESS
 
-# RPC_ADDRESS = 'https://rpc-mainnet.maticvigil.com/v1/f632570838c8d7c5e5c508c6f24a0e23eabac8c7'
-RPC_ADDRESS = 'https://rpc-mumbai.maticvigil.com/v1/f632570838c8d7c5e5c508c6f24a0e23eabac8c7'
 
 def get_web3_provider():
     """

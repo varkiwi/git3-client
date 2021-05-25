@@ -4,9 +4,10 @@ import ipfshttpclient
 from .gitObject import read_object
 from .gitTree import find_tree_objects, unpack_files_of_tree
 
+from git3Client.config.config import IPFS_CONNECTION
+
 from git3Client.utils.utils import write_file
 
-IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
 client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def find_commit_objects(commit_sha1):

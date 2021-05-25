@@ -16,26 +16,25 @@ def clone(repo_name):
 
     repo_name: Repository to be cloned
     """
-    # git3 clone 0xE838bC8b2D069CE43894143836fA974643646291/repoDeppo
     user_address, repo_name = repo_name.split('/')
 
     git_factory = get_factory_contract()
     user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
     user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
 
-    # repository = git_factory.functions.repositoryList(user_key).call()
     repository = git_factory.functions.getRepository(user_key).call()
 
     if not repository[0] or repository[1] != repo_name:
         print('No such repository')
         return
     git_repo_address = repository[2]
-    # branch_contract = get_repository_contract(git_repo_address)
+    
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
-    # branch = branch_contract.functions.branches('main').call()
+    
     branch = branch_contract.functions.getBranch('main').call()
     headCid = branch[1]
     print('Cloning {:s}'.format(repo_name))
+    
     # initialize repository
     init(repo_name)
     # get all remote commits

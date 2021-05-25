@@ -1,6 +1,6 @@
 import os
 
-from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.repository import get_all_remote_commits
 
 from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit

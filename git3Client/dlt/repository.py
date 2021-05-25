@@ -1,6 +1,8 @@
 import binascii, os
 import ipfshttpclient
 
+from git3Client.config.config import CHAINID, IPFS_CONNECTION
+
 from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
 from git3Client.dlt.provider import get_web3_provider
 from git3Client.dlt.user import get_user_dlt_address
@@ -11,8 +13,6 @@ from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
 from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path
 
-CHAINID = 80001
-IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
 client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def get_remote_cid_history():

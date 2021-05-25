@@ -1,8 +1,5 @@
-import binascii, collections, struct, os, hashlib, zlib
+import struct, os, hashlib
 
-from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
-# from .gitObject import read_object
-# from .gitTree import read_tree, get_subtree_entries
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
