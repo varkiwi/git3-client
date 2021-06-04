@@ -1,10 +1,9 @@
-import binascii, os
+import os
 
-from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.repository import get_all_remote_commits
-from git3Client.dlt.user import get_user_dlt_address
 
-from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_tree, unpack_files_of_commit
+from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
 
 from git3Client.utils.utils import read_repo_name, get_local_master_hash, get_repo_root_path, write_file
 
@@ -19,11 +18,7 @@ def fetch():
         print('.git/name file has an error. Exiting...')
         return False
     user_key = repo_name.split('location:')[1].strip()
-    user_address = get_user_dlt_address()
-
-    # user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
-    # user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
-    # repository = git_factory.functions.repositoryList(user_key).call()
+    
     repository = git_factory.functions.getRepository(user_key).call()
 
     if not repository[0]:
@@ -31,14 +26,12 @@ def fetch():
         return
 
     git_repo_address = repository[2]
-    # repo_contract = get_repository_contract(git_repo_address)
-
-    # branch = repo_contract.functions.branches('main').call()
+    
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
     branch = branch_contract.functions.getBranch('main').call()
     headCid = branch[1]
     
-    remote_commits = get_all_remote_commits(headCid, repo_name)
+    remote_commits = get_all_remote_commits(headCid)
     #extract only the sha1 hash
     remote_commits_sha1 = [e['sha1'] for e in remote_commits]
 

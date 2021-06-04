@@ -1,17 +1,12 @@
 import binascii, os, zlib
-import ipfshttpclient
 
 from .IndexEntry import IndexEntry
 from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
-
-# from .gitObject import hash_object, read_object
 from .gitObject import read_object
 
-from git3Client.config.config import IPFS_CONNECTION
+from git3Client.dlt.storageClient import getStorageClient
 
 from git3Client.utils.utils import write_file
-
-client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def find_tree_objects(tree_sha1):
     """Return set of SHA-1 hashes of all objects in this tree (recursively),
@@ -66,6 +61,7 @@ def unpack_files_of_tree(repo_name, path_to_write, tree, unpack_blobs):
     is set true. Otherwise only the git objects are created
     """
     tree_entries = []
+    client = getStorageClient()
     for entry in tree['entries']:
         if entry['mode'] == GIT_NORMAL_FILE_MODE:
             blob = client.get_json(entry['cid'])

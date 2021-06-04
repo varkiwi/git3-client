@@ -1,14 +1,8 @@
-import ipfshttpclient
-
-from git3Client.config.config import IPFS_CONNECTION
-
 from git3Client.dlt.repository import check_if_repo_created, push_commit, push_new_cid
+from git3Client.dlt.repository import check_if_remote_ahead, get_remote_master_hash
+from git3Client.dlt.storageClient import getStorageClient
 
 from git3Client.utils.utils import get_local_master_hash
-from git3Client.dlt.repository import check_if_remote_ahead, get_remote_master_hash
-
-# IPFS_CONNECTION = '/dns4/ipfs.infura.io/tcp/5001/https'
-client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def push():
     """Push master branch to given git repo URL.""" 
@@ -18,6 +12,7 @@ def push():
     local_sha1 = get_local_master_hash()
     remote_cid = get_remote_master_hash()
     if remote_cid != None:
+        client = getStorageClient()
         # since there is already something pushed, we will have to get the remote cid
         remote_commit = client.get_json(remote_cid)
         remote_sha1 = remote_commit['sha1']
