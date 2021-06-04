@@ -3,6 +3,7 @@ import difflib, os
 from git3Client.dlt.contract import get_factory_contract
 
 from git3Client.gitCommands.add import add
+from git3Client.gitCommands.commit import commit
 
 from git3Client.gitInternals.gitCommit import get_all_local_commits
 from git3Client.gitInternals.gitObject import read_object, unpack_object
@@ -14,6 +15,7 @@ def merge():
     """
     Merges two branches. Since we currently support only one branch, merge takes the commit from FETCH_HEAD for now
     """
+    had_conflict = False
     repo_root_path = get_repo_root_path()
     fetch_head_path = os.path.join(repo_root_path, '.git', 'FETCH_HEAD')
     if not os.path.exists(fetch_head_path):
