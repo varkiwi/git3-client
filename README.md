@@ -1,4 +1,4 @@
-[![Dev](https://badge.devprtcl.com/api/0xc6286Fc480Ba4d15981664a3350ABF12b0b7Feda)](https://stakes.social/0xc6286Fc480Ba4d15981664a3350ABF12b0b7Feda)
+[![Stake to support us](https://badge.devprotocol.xyz/0xc6286Fc480Ba4d15981664a3350ABF12b0b7Feda/descriptive)](https://stakes.social/0xc6286Fc480Ba4d15981664a3350ABF12b0b7Feda)
 
 # GIT 3
 
