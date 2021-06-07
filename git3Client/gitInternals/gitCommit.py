@@ -1,14 +1,12 @@
 import os, zlib
-import ipfshttpclient
+#import ipfshttpclient
 
 from .gitObject import read_object
 from .gitTree import find_tree_objects, unpack_files_of_tree
 
-from git3Client.config.config import IPFS_CONNECTION
+from git3Client.dlt.storageClient import getStorageClient
 
 from git3Client.utils.utils import write_file
-
-client = ipfshttpclient.connect(IPFS_CONNECTION)
 
 def find_commit_objects(commit_sha1):
     """Return set of SHA-1 hashes of all objects in this commit (recursively),
@@ -32,7 +30,7 @@ def get_all_local_commits(commit_hash):
     """
     all_commits = []
     parents = []
-    #local_sha1 = get_local_master_hash()
+
     all_commits.append(commit_hash)
     obj_type, commit = read_object(commit_hash)
     lines = commit.decode().splitlines()
@@ -56,6 +54,7 @@ def unpack_files_of_commit(repo_name, commit_object, unpack_blobs):
     and write the content into a file. Commit_object has to be of the ipfs structure.
     """
     write_commit(commit_object, repo_name)
+    client = getStorageClient()
     tree = client.get_json(commit_object['tree'])
     unpack_files_of_tree(repo_name, repo_name, tree, unpack_blobs)
 
@@ -67,7 +66,9 @@ def write_commit(commit_object, repo_name):
     committer_time = '{} {}'.format(commit_object['committer']['date_seconds'], commit_object['committer']['date_timestamp'])
     lines = []
     
+    client = getStorageClient()
     tree_obj = client.get_json(commit_object['tree'])
+
     lines = ['tree ' + tree_obj['sha1']]
     if commit_object['parents']:
         for parent in commit_object['parents']:
