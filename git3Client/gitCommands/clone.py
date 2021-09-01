@@ -38,7 +38,7 @@ def clone(repo_name):
     # initialize repository
     init(repo_name)
     # get all remote commits
-    all_commits = get_all_remote_commits(headCid, repo_name)
+    all_commits = get_all_remote_commits(headCid)
     #unpack files from the newest commit
     first = True
     for commit in all_commits:
