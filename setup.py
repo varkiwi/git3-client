@@ -1,15 +1,14 @@
 from setuptools import setup, find_packages
- 
+
 readme = open('README.md', 'r')
 content = readme.read()
 readme.close()
 
+# print(find_packages('.'))
+
 setup(
     name = "git3Client",
     packages = find_packages('.'),
-    package_data = {
-        'artifacts': ['*.json']
-    },
     include_package_data = True,
     entry_points = {
         "console_scripts": [

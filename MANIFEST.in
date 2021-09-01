@@ -1,0 +1,1 @@
+include git3Client/artifacts *.json
