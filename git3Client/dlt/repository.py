@@ -141,7 +141,7 @@ def get_remote_master_hash():
     # if active, return head cid
     return branch[1]
 
-def push_tree(tree_hash: str, folder_name: str) -> str:
+def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
     """
     Takes a tree hash and a folder name and pushed the blobs and tree to a remote storage.
 
@@ -155,7 +155,25 @@ def push_tree(tree_hash: str, folder_name: str) -> str:
     entries = read_tree(tree_hash)
     tree_entries = []
 
+    subdirFiles = remote_database
+    for p in remote_database['path']:
+        if p not in subdirFiles:
+            subdirFiles[p] = { 'files': {}}
+        subdirFiles = subdirFiles[p]
+
     for entry in entries:
+        # adding all the necessary information to the remote database
+        if entry[1] not in subdirFiles or 'commit_time' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
+            if entry[1] not in subdirFiles:
+                subdirFiles[entry[1]] = {}
+            subdirFiles[entry[1]]['mode'] = entry[0]
+            subdirFiles[entry[1]]['name'] = entry[1]
+            subdirFiles[entry[1]]['sha1'] = entry[2]
+            if entry[0] == GIT_TREE_MODE and 'files' not in  subdirFiles[entry[1]]:
+                subdirFiles[entry[1]]['files'] = {}
+            subdirFiles[entry[1]]['commit_message'] = remote_database['currentCommitMessage']
+            subdirFiles[entry[1]]['commit_time'] = remote_database['committer']['date_seconds']
+
         if entry[0] == GIT_NORMAL_FILE_MODE:
             obj_type, blob = read_object(entry[2])
             assert obj_type == 'blob'
@@ -165,30 +183,38 @@ def push_tree(tree_hash: str, folder_name: str) -> str:
                 'sha1': entry[2]
             }
             cid = client.add_json(blob_to_push)
+
+            # if 'cid' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
+            #     subdirFiles[entry[1]]['cid'] = cid
             print('Pushing {} to IPFS'.format(entry[1]))
-            #tree_entries.append({
-            #    'mode': entry[0],
-            #    'name': entry[1],
-            #    'cid': cid
-            #})
         elif entry[0] == GIT_TREE_MODE:
-            cid = push_tree(entry[2], entry[1])
+            remote_database['path'].append(entry[1])
+            remote_database['path'].append('files')
+            cid = push_tree(entry[2], entry[1], remote_database)
+
+            remote_database['path'].pop()
+
+        if 'cid' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
+            subdirFiles[entry[1]]['cid'] = cid
         
         tree_entries.append({
             'mode': entry[0],
             'name': entry[1],
-            'cid': cid
+            'cid': cid,
+            'sha1': entry[2]
         })
+
     tree_to_push = {
         'type': 'tree',
         'entries': tree_entries,
         'name': folder_name,
         'sha1': tree_hash
     }
+
     cid = client.add_json(tree_to_push)
     return cid
 
-def push_commit(commit_hash, remote_commit_hash, remote_commit_cid):
+def push_commit(commit_hash, remote_commit_hash, remote_commit_cid, remote_database):
     """
     Used to push a commit, the tree it references and the blobs to ipfs. 
 
@@ -206,13 +232,12 @@ def push_commit(commit_hash, remote_commit_hash, remote_commit_cid):
         'parents': [],
         'sha1': commit_hash,
     }
+    parents = []
     for line in lines:
         if line.startswith('tree '):
             tree_hash = line[5:45]
-            commit_to_push['tree'] = push_tree(tree_hash, '.')
         elif line.startswith('parent '):
-            parent_cid = push_commit(line[7:47], remote_commit_hash, remote_commit_cid)
-            commit_to_push['parents'].append(parent_cid)
+            parents.append(line[7:47])
         elif line.startswith('author'):
             splitted_line = line.split(' ')
             commit_to_push['author'] = {
@@ -235,6 +260,13 @@ def push_commit(commit_hash, remote_commit_hash, remote_commit_cid):
                 
             if space_commit_message:
                 commit_to_push['commit_message'] = line
+                remote_database['currentCommitMessage'] = line
+                remote_database['committer'] = commit_to_push['committer']
+
+    commit_to_push['tree'] = push_tree(tree_hash, '.', remote_database)
+    for parent in parents:
+        parent_cid = push_commit(parent, remote_commit_hash, remote_commit_cid, remote_database)
+        commit_to_push['parents'].append(parent_cid)
 
     client = getStorageClient()
     commit_cid = client.add_json(commit_to_push)
