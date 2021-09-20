@@ -4,8 +4,6 @@ readme = open('README.md', 'r')
 content = readme.read()
 readme.close()
 
-# print(find_packages('.'))
-
 setup(
     name = "git3Client",
     packages = find_packages('.'),
@@ -15,7 +13,7 @@ setup(
             "git3 = git3Client.__main__:run",
         ]
     },
-    version = "0.1.2",
+    version = "0.2.1",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
@@ -29,7 +27,7 @@ setup(
         'chardet==3.0.4',
         'cytoolz==0.11.0',
         'eth-abi==2.1.1',
-        'eth-account==0.5.4',
+        'eth-account==0.5.5',
         'eth-hash==0.2.0',
         'eth-keyfile==0.5.1',
         'eth-keys==0.3.3',
@@ -40,7 +38,7 @@ setup(
         'idna==2.10',
         'importlib-metadata==4.0.1',
         'importlib-resources==3.0.0',
-        'ipfshttpclient==0.7.0a1',
+        'ipfshttpclient==0.8.0a2',
         'jsonschema==3.2.0',
         'lru-dict==1.1.6',
         'multiaddr==0.0.9',
@@ -57,8 +55,9 @@ setup(
         'typing-extensions==3.7.4.3',
         'urllib3==1.25.11',
         'varint==1.0.2',
-        'web3==5.12.3',
-        'websockets==8.1',
+        #'web3==5.12.3',
+        'web3==5.23.1',
+        'websockets==9.1',
         'zipp==3.3.1',
       ],
     url = "https://github.com/varkiwi/git3-client",
