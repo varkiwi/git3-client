@@ -4,7 +4,7 @@ from git3Client.utils.utils import write_file
 
 def init(repo):
     """
-    Function for the git init command. It creats a .git directory for repository and fills it with git related
+    Function for the git init command. It creates a .git directory for repository and fills it with git related
     directories and files.
     """
     if os.path.exists(os.path.join(repo, '.git')):
@@ -24,7 +24,7 @@ def init(repo):
     # create necessary directories
     for name in ['objects', 'refs', 'refs/heads']:
         os.mkdir(os.path.join(repo, '.git', name))
-    write_file(os.path.join(repo, '.git', 'HEAD'), b'ref: refs/heads/master')
+    write_file(os.path.join(repo, '.git', 'HEAD'), b'ref: refs/heads/main')
 
     # write the name of the repository into a file
     write_file(os.path.join(repo, '.git', 'name'), str.encode('name: ' + repoName))
