@@ -90,3 +90,44 @@ Here is the structure of the database:
    "head_cid":"CID to youngest commit in IPFS"
 }
 ```
+
+# Branching
+The `.git` directory contains a file called `HEAD`. This file contains the following text: `ref: refs/heads/[branchName]`.
+This means that the current branch is `[branchName]`.
+The file in `refs/heads/[branchName]` contains the SHA1  of the commit, which is the head of the branch.
+
+`git` offers two commands:
+```bash
+git checkout <existing_branch>
+
+git checkout -b <new_branch>
+```
+
+## Checkout
+```bash
+git checkout <non_existing_branch>
+error: pathspec <non_existing_branch> did not match any file(s) known to git
+```
+```bash
+git checkout -b <existing_branch>
+fatal: A branch named <existing_branch> already exists.
+```
+
+## Branch
+```bash
+git branch
+```
+returns a list of all branches.
+
+
+## Checkout Remote Branch on Git
+
+In some cases, you may be interested in checking out remote branches from your distant repository.
+
+In order to switch to a remote branch, make sure to fetch your remote branch with “git fetch” first. You can then switch to it by executing “git checkout” with the “-t” option and the name of the branch.
+
+```bash
+git fetch
+
+git checkout -t <remote_name>/<branch_name>
+```
