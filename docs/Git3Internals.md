@@ -119,6 +119,18 @@ git branch
 ```
 returns a list of all branches.
 
+```bash
+git branch <branchname>
+```
+creates a new branch but does not switch to it. Creating a new branch means that a new file is created (`./git/refs/heads/<branchna,e>`) is created. The content of the currently active branch (reference in `.git/HEAD`) is written to this file.
+
+If a branch with the same name already exists, the following error is printed: `fatal: A branch named <branchname> already exists.`
+
+If a new repository has been created and there is no file in `.git/refs/heads/` the following error is printed: `fatal: Not a valid object name: '<branchname>'.`
+
+## Switch
+Switch to a specified branch. The working tree and the index are updated to match the branch. All new commits will be added to the tip of this branch.
+
 
 ## Checkout Remote Branch on Git
 
