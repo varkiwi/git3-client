@@ -110,6 +110,10 @@ def get_local_master_hash():
     except FileNotFoundError:
         return None
 
+def list_files_in_dir(path):
+    """List all files in a directory."""
+    return os.listdir(path)
+
 def read_file(path):
     """Read contents of file at given path as bytes."""
     with open(path, 'rb') as f:

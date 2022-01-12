@@ -4,6 +4,7 @@ import argparse
 import sys
 
 from git3Client.gitCommands.add import add
+from git3Client.gitCommands.branch import branch
 from git3Client.gitCommands.catFile import cat_file
 from git3Client.gitCommands.clone import clone
 from git3Client.gitCommands.commit import commit
@@ -30,6 +31,9 @@ def main():
             help='add file(s) to index')
     sub_parser.add_argument('paths', nargs='+', metavar='path',
             help='path(s) of files to add')
+
+    sub_parser = sub_parsers.add_parser('branch',
+            help='List branches')
 
     sub_parser = sub_parsers.add_parser('cat-file',
             help='display contents of object')
@@ -113,6 +117,8 @@ def main():
     args = parser.parse_args()
     if args.command == 'add':
         add(args.paths)
+    elif args.command == 'branch':
+        branch()
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)
