@@ -119,7 +119,7 @@ def read_file(path):
     with open(path, 'rb') as f:
         return f.read()
 
-def write_file(path, data):
+def write_file(path, data, binary='b'):
     """Write data bytes to file at given path."""
-    with open(path, 'wb') as f:
+    with open(path, 'w{}'.format(binary)) as f:
         f.write(data)

@@ -4,7 +4,8 @@ import argparse
 import sys
 
 from git3Client.gitCommands.add import add
-from git3Client.gitCommands.branch import branch
+from git3Client.gitCommands.branch import listBranches, createBranch
+from git3Client.gitCommands.checkout import checkout
 from git3Client.gitCommands.catFile import cat_file
 from git3Client.gitCommands.clone import clone
 from git3Client.gitCommands.commit import commit
@@ -27,14 +28,19 @@ def main():
     sub_parsers = parser.add_subparsers(dest='command', metavar='command')
     sub_parsers.required = True
 
+    # Add
     sub_parser = sub_parsers.add_parser('add',
             help='add file(s) to index')
     sub_parser.add_argument('paths', nargs='+', metavar='path',
             help='path(s) of files to add')
 
+    # Branch
     sub_parser = sub_parsers.add_parser('branch',
-            help='List branches')
+            help='List and Create branches')
+    sub_parser = sub_parser.add_argument('branchname', metavar='<branchname>', nargs='?',
+            help='Create a new branch named <branchname>')
 
+    # Cat-file
     sub_parser = sub_parsers.add_parser('cat-file',
             help='display contents of object')
     valid_modes = ['commit', 'tree', 'blob', 'size', 'type', 'pretty']
@@ -44,6 +50,13 @@ def main():
     sub_parser.add_argument('hash_prefix',
             help='SHA-1 hash (or hash prefix) of object to display')
 
+    # Checkout
+    sub_parser = sub_parsers.add_parser('checkout',
+            help='Switch branches')
+    sub_parser.add_argument('-b', '-B', metavar='new_branch',
+            help='Create a new branch with name new_branch')
+
+    # Commit
     sub_parser = sub_parsers.add_parser('commit',
             help='commit current state of index to master branch')
     sub_parser.add_argument('-a', '--author',
@@ -53,9 +66,11 @@ def main():
     sub_parser.add_argument('-m', '--message', required=True,
             help='text of commit message')
 
+    # Create
     sub_parser = sub_parsers.add_parser('create',
             help='create your remote repository')
     
+    # Clone
     sub_parser = sub_parsers.add_parser('clone',
             help='create your remote repository')    
     sub_parser.add_argument('name',
@@ -64,6 +79,7 @@ def main():
             #help='show diff of files changed (between index and working '
                  #'copy)')
 
+    # Hash-object
     sub_parser = sub_parsers.add_parser('hash-object',
             help='hash contents of given path (and optionally write to '
                  'object store)')
@@ -75,6 +91,7 @@ def main():
     sub_parser.add_argument('-w', action='store_true', dest='write',
             help='write object to object store (as well as printing hash)')
 
+    # init
     sub_parser = sub_parsers.add_parser('init',
             help='initialize a new repo')
     sub_parser.add_argument('repo',
@@ -88,15 +105,19 @@ def main():
             #help='show object details (mode, hash, and stage number) in '
                  #'addition to path')
 
+    # Fetch
     sub_parser = sub_parsers.add_parser('fetch',
             help='Download object and refs from another repository')
 
+    # Get-Address
     sub_parser = sub_parsers.add_parser('get-address',
             help='Get Matic wallet address')
 
+    # Merge
     sub_parser = sub_parsers.add_parser('merge',
             help='Join two or more development histories together')
 
+    # Push
     sub_parser = sub_parsers.add_parser('push',
             help='push master branch to given git server URL')
     #sub_parser.add_argument('git_url',
@@ -108,9 +129,11 @@ def main():
             #help='username to use for authentication (uses GIT_USERNAME '
                  #'environment variable by default)')
 
+    # Pull
     sub_parser = sub_parsers.add_parser('pull',
             help='pulls remote commits')
 
+    # Status
     sub_parser = sub_parsers.add_parser('status',
             help='show status of working copy')
 
@@ -118,7 +141,13 @@ def main():
     if args.command == 'add':
         add(args.paths)
     elif args.command == 'branch':
-        branch()
+        if args.branchname:
+            print('Create new branch')
+            createBranch(args.branchname)
+        else:
+            listBranches()
+    elif args.command == 'checkout':
+        checkout(args.b)
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)
