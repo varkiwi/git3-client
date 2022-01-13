@@ -5,7 +5,6 @@ import sys
 
 from git3Client.gitCommands.add import add
 from git3Client.gitCommands.branch import listBranches, createBranch
-from git3Client.gitCommands.checkout import checkout
 from git3Client.gitCommands.catFile import cat_file
 from git3Client.gitCommands.clone import clone
 from git3Client.gitCommands.commit import commit
@@ -142,12 +141,14 @@ def main():
         add(args.paths)
     elif args.command == 'branch':
         if args.branchname:
-            print('Create new branch')
-            createBranch(args.branchname)
+            createBranch(args.command, args.branchname)
         else:
             listBranches()
     elif args.command == 'checkout':
-        checkout(args.b)
+        if args.b is None:
+            print('Just a simple checkout')
+        else:
+            createBranch('checkout', args.b)
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)

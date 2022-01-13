@@ -9,7 +9,7 @@ from git3Client.gitInternals.gitCommit import get_all_local_commits
 from git3Client.gitInternals.gitObject import read_object, unpack_object
 from git3Client.gitInternals.gitTree import get_subtree_entries
 
-from git3Client.utils.utils import get_repo_root_path, get_local_master_hash, read_repo_name, read_file, write_file
+from git3Client.utils.utils import get_repo_root_path, get_active_branch_hash, read_repo_name, read_file, write_file
 
 def merge():
     """
@@ -24,7 +24,7 @@ def merge():
     fetch_head = read_file(fetch_head_path)
 
     remote_sha1 = fetch_head.decode()[0:40]
-    local_sha1 = get_local_master_hash()
+    local_sha1 = get_active_branch_hash()
 
     if remote_sha1 == local_sha1:
        return

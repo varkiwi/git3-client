@@ -19,9 +19,12 @@ def listBranches():
         result += '* {}\n'.format(branch)
     print(result)
 
-def createBranch(name):
+def createBranch(command, name):
     """
     This function creates a new branch head named <name> which points to the current HEAD.
+
+    command arg is used to distinguish if it has been called by checkout or branch, since it behaves
+    a bit differently.
     """
     try:
         repo_root_path = get_repo_root_path()
@@ -38,11 +41,18 @@ def createBranch(name):
     # If not, 
     currentHeadRef = read_file('{}/.git/HEAD'.format(repo_root_path)).decode("utf-8").split('ref:')[1].strip()
 
+    # check if the file under the refs/heads/ directory exists
     if os.path.isfile('{}/.git/{}'.format(repo_root_path, currentHeadRef)):
         # if file exists, then we can read the content
         # and write it into the new file
         commitHash = read_file('{}/.git/{}'.format(repo_root_path, currentHeadRef)).decode("utf-8")
         write_file('{}/.git/refs/heads/{}'.format(repo_root_path, name), commitHash, binary='')
     else:
-        print('fatal: Not a valid object name: \'{}\'.'.format(currentHeadRef.split('/')[-1]))
-        exit(1)
+        # if the user executes git branch, an error is thrown
+        if command == 'branch':
+            print('fatal: Not a valid object name: \'{}\'.'.format(currentHeadRef.split('/')[-1]))
+            exit(1)
+    
+    if command == 'checkout':
+        # in case of git switch or checkout, the HEAD file is updated
+        write_file('{}/.git/HEAD'.format(repo_root_path, name), 'ref: refs/heads/{}'.format(name), binary='')

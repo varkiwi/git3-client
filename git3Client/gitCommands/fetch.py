@@ -5,7 +5,7 @@ from git3Client.dlt.repository import get_all_remote_commits
 
 from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
 
-from git3Client.utils.utils import read_repo_name, get_local_master_hash, get_repo_root_path, write_file
+from git3Client.utils.utils import read_repo_name, get_active_branch_hash, get_repo_root_path, write_file
 
 def fetch():
     """
@@ -35,7 +35,7 @@ def fetch():
     #extract only the sha1 hash
     remote_commits_sha1 = [e['sha1'] for e in remote_commits]
 
-    local_sha1 = get_local_master_hash()
+    local_sha1 = get_active_branch_hash()
     local_commits = get_all_local_commits(local_sha1)
     if local_commits[0] == remote_commits_sha1[0]:
         print('Nothing to fetch. You are up-to-date')

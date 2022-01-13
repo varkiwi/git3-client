@@ -4,17 +4,17 @@ from git3Client.gitInternals.gitIndex import read_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.gitTree import write_tree
 
-from git3Client.utils.utils import get_local_master_hash, get_repo_root_path, get_value_from_config_file, read_file, write_file
+from git3Client.utils.utils import get_active_branch_hash, get_repo_root_path, get_value_from_config_file, read_file, write_file, get_current_branch_name
 
 def commit(message, author=None, parent1=None, parent2=None):
-    """Commit the current state of the index to master with given message.
+    """Commit the current state of the index to active branch with given message.
     Return hash of commit object.
     """
     index = read_index()
     # we are working on write tree
     tree =  hash_object(b''.join(write_tree(index)), 'tree') 
     if parent1 == None:
-        parent = get_local_master_hash()
+        parent = get_active_branch_hash()
     else:
         parent = parent1
 
@@ -49,8 +49,10 @@ def commit(message, author=None, parent1=None, parent2=None):
     sha1 = hash_object(data, 'commit')
 
     repo_root_path = get_repo_root_path()
-    master_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', 'master')
-    write_file(master_path, (sha1 + '\n').encode())
+    activeBranch = get_current_branch_name()
+    
+    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', activeBranch)
+    write_file(branch_path, (sha1 + '\n').encode())
 
     # remove the merge files from the .git directory if committed
     if parent2 != None and os.path.exists(merge_head_path):
@@ -59,8 +61,8 @@ def commit(message, author=None, parent1=None, parent2=None):
         os.remove(merge_mode_path)
         merge_msg_path = merge_head_path.replace('MERGE_HEAD', 'MERGE_MSG')
         os.remove(merge_msg_path)
-    #print('committed to master: {:7}'.format(sha1))
+    
     #TODO: git returns the number of files added and changed. Would be good too
-    print('[{} {}] {}'.format('master', sha1[:7], message))
+    print('[{} {}] {}'.format(activeBranch, sha1[:7], message))
     print('Author: {}'.format(author))
     return sha1

@@ -2,14 +2,14 @@ from git3Client.dlt.repository import check_if_repo_created, push_commit, push_n
 from git3Client.dlt.repository import check_if_remote_ahead, get_remote_master_hash
 from git3Client.dlt.storageClient import getStorageClient
 
-from git3Client.utils.utils import get_local_master_hash
+from git3Client.utils.utils import get_active_branch_hash
 
 def push():
     """Push master branch to given git repo URL.""" 
     if not check_if_repo_created():
         print('Repository has not been registered yet. Use\n\n`git3 create`\n\nbefore you push')
         return
-    local_sha1 = get_local_master_hash()
+    local_sha1 = get_active_branch_hash()
     remote_cid = get_remote_master_hash()
     client = getStorageClient()
     # if remote_cid is none, nothing has been pushed yet.

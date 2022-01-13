@@ -4,7 +4,7 @@ from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-from git3Client.utils.utils import get_repo_root_path, read_file, write_file, get_local_master_hash
+from git3Client.utils.utils import get_repo_root_path, read_file, write_file, get_active_branch_hash
 
 def get_status():
     """
@@ -38,7 +38,7 @@ def is_stage_empty():
     from .gitObject import read_object
     from .gitTree import get_subtree_entries
 
-    local_sha1 = get_local_master_hash()
+    local_sha1 = get_active_branch_hash()
     obj_type, data = read_object(local_sha1)
     assert obj_type == 'commit'
     splitted_commit = data.decode().splitlines()
