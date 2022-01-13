@@ -101,12 +101,22 @@ def read_repo_name():
         return ""
     return data.rstrip().decode('ascii')
 
-def get_local_master_hash():
+def get_current_branch_name():
+    """
+    Get the current branch name and return the string
+    """
+    repo_root_path = get_repo_root_path()
+    headContent = read_file(path=os.path.join(repo_root_path, '.git', 'HEAD')).decode('ascii')
+    branchName = headContent.split('/')[-1].strip()
+    return branchName
+
+def get_active_branch_hash():
     """Get current commit hash (SHA-1 string) of local master branch."""
     repo_root_path = get_repo_root_path()
-    master_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', 'master')
+    activeBranch = get_current_branch_name()
+    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', activeBranch)
     try:
-        return read_file(master_path).decode().strip()
+        return read_file(branch_path).decode().strip()
     except FileNotFoundError:
         return None
 
