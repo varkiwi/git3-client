@@ -34,8 +34,32 @@ Create a new branch.
         a. git checkout -b [name] - Creates a new branch. This means, that a new file is created (`./git/refs/heads/<branchname>`) The content of the currently active branch (reference in `.git/HEAD`) is written to this file. The .git/HEAD file is updated to reference to the newly created file .git/refs/heads/<branchname>. Content in the file remains the same.
     
         b. git branch [name] - Creates a new branch. This means, that a new file is created (`./git/refs/heads/<branchname>`) The content of the currently active branch (reference in `.git/HEAD`) is written to this file. The .git/HEAD file is not updated.
+    
+    
+    6. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file, git add and commit. Now try to create a new branch using the originals branch name.
+        
+        a. git checkout -b [original name] - Returns an error: `fatal: A branch names '[original name]' already exists.`
+
+        b. git branch [original name] - Returns an error: `fatal: A branch named '[original name]' already exists.`
+
+
 
 What about the index file?
 In all cases the index file remains the same.
 
 # Switch branch
+
+    1. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file. Switch to old branch.
+
+        a. git checkout [original name] - Content in the file remains the same.
+    
+    2. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file and git add. Switch to old branch.
+
+        a. git checkout [original name] - Content in the file remains the same.
+
+    3. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file, git add and commit. Switch to old branch.
+
+        a. git checkout [original name] - The content which has been added on the second branch is removed, when the branch is switched to the first branch. The index file also changes. It seems that the index file is also updated when switching branches. Only in this case. In all the other cases the index file stays the same.
+
+    Observation: Whenever I am switching a branch and the hash of the ref files is the same, the content of the file is the same.
+    Once there is a difference, the content of the file is different. When the hash in the ref files is different, the files in the repository are updated to reflect the content of that branch. 

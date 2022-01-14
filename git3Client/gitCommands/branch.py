@@ -19,7 +19,7 @@ def listBranches():
         result += '* {}\n'.format(branch)
     print(result)
 
-def createBranch(command, name):
+def createBranch(command, newBranchName):
     """
     This function creates a new branch head named <name> which points to the current HEAD.
 
@@ -32,11 +32,11 @@ def createBranch(command, name):
         print(nre)
         exit(1)
     
-    pathToRef = '{}/.git/refs/heads/{}'.format(repo_root_path, name)
+    pathToRef = '{}/.git/refs/heads/{}'.format(repo_root_path, newBranchName)
 
     # check if branch already exists
     if os.path.isfile(pathToRef):
-        print('fatal: A branch named {} already exists.'.format(name))
+        print('fatal: A branch named {} already exists.'.format(newBranchName))
         exit(1)
     # If not, 
     currentHeadRef = read_file('{}/.git/HEAD'.format(repo_root_path)).decode("utf-8").split('ref:')[1].strip()
@@ -46,7 +46,7 @@ def createBranch(command, name):
         # if file exists, then we can read the content
         # and write it into the new file
         commitHash = read_file('{}/.git/{}'.format(repo_root_path, currentHeadRef)).decode("utf-8")
-        write_file('{}/.git/refs/heads/{}'.format(repo_root_path, name), commitHash, binary='')
+        write_file('{}/.git/refs/heads/{}'.format(repo_root_path, newBranchName), commitHash, binary='')
     else:
         # if the user executes git branch, an error is thrown
         if command == 'branch':
@@ -55,4 +55,4 @@ def createBranch(command, name):
     
     if command == 'checkout':
         # in case of git switch or checkout, the HEAD file is updated
-        write_file('{}/.git/HEAD'.format(repo_root_path, name), 'ref: refs/heads/{}'.format(name), binary='')
+        write_file('{}/.git/HEAD'.format(repo_root_path, newBranchName), 'ref: refs/heads/{}'.format(newBranchName), binary='')
