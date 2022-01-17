@@ -4,13 +4,13 @@ from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.repository import get_all_remote_commits
 
 from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
-from git3Client.gitInternals.gitIndex import get_status, is_stage_empty
+from git3Client.gitInternals.gitIndex import get_status_workspace, is_stage_empty
 
 from git3Client.utils.utils import read_repo_name, get_repo_root_path, read_file, write_file
 
 def pull():
     print('Pulling')
-    changed, _, _ = get_status()
+    changed, _, _ = get_status_workspace()
     # we are checking if there a changed files in the working copy or files staged which have not been committed.
     # if one case is true, pull won't be executed
     if len(changed) > 0 or not is_stage_empty():

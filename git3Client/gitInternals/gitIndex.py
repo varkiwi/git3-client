@@ -6,7 +6,7 @@ from .IndexEntry import IndexEntry
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 from git3Client.utils.utils import get_repo_root_path, read_file, write_file, get_active_branch_hash
 
-def get_status():
+def get_status_workspace():
     """
     Get status of working copy, return tuple of
     (changed_paths, new_paths, deleted_paths).
