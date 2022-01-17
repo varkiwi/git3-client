@@ -51,15 +51,50 @@ In all cases the index file remains the same.
 
     1. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file. Switch to old branch.
 
-        a. git checkout [original name] - Content in the file remains the same.
+        a. git checkout [original name] - Content in the file remains the same. Sha1sum of index remains the same.
     
     2. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file and git add. Switch to old branch.
 
-        a. git checkout [original name] - Content in the file remains the same.
+        a. git checkout [original name] - Content in the file remains the same. Yet, the sha1sum changes, on both branches.
 
     3. Have a repository, create a file with content, git add and commit. Switch branch. Add content to file, git add and commit. Switch to old branch.
 
         a. git checkout [original name] - The content which has been added on the second branch is removed, when the branch is switched to the first branch. The index file also changes. It seems that the index file is also updated when switching branches. Only in this case. In all the other cases the index file stays the same.
+    
+
+    4. Have a repository with two branches. One is ahead of the other one and is active. Switch to the first branch.
+
+        a. git checkout [first branch] - Sha1 has of the index file is different. So there is a difference in the content of the index files between those branches. Content which has been added to the branch ahead is not in the first branch.
+
+
+    5. Have a repository with two branches. One is ahead of the other one and is active. Add content to file and switch to the first branch. 
+
+        a. git checkout [first branch] - This is the error message which gets displayed:
+        
+        error: Your local changes to the following files would be overwritten by checkout:
+            test.txt
+        Please commit your changes or stash them before you switch branches.
+        Aborting
+
+        I ran git diff and it tells me the difference between the working tree and the index file. Since there is a difference, I assume that the reason why I get this error message.
+
+
+    
+    6. Have a repository with two branches. One is ahead of the other one and is active. Add content to file and git add the content. Switch to the first branch. 
+
+        a. git checkout [first branch] - This is the error message which gets displayed:
+        
+        error: Your local changes to the following files would be overwritten by checkout:
+            test.txt
+        Please commit your changes or stash them before you switch branches.
+        Aborting
+
+        I ran git diff --staged and it tells me the difference between the index file and the HEAD. Since there is a difference, I assume that the reason why I get this error message.
+
+    
+    7. Have a repository with two branches. One is ahead of the other one and is active. Add content to file and git commit the content. Switch to the first branch. 
+
+        a. git checkout [first branch] - Switch works. All good.
 
     Observation: Whenever I am switching a branch and the hash of the ref files is the same, the content of the file is the same.
     Once there is a difference, the content of the file is different. When the hash in the ref files is different, the files in the repository are updated to reflect the content of that branch. 
