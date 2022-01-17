@@ -73,10 +73,15 @@ def main():
     sub_parser = sub_parsers.add_parser('clone',
             help='create your remote repository')    
     sub_parser.add_argument('name',
-            help='name of repository to clone')    
-    #sub_parser = sub_parsers.add_parser('diff',
-            #help='show diff of files changed (between index and working '
-                 #'copy)')
+            help='name of repository to clone')
+
+    # Diff
+    sub_parser = sub_parsers.add_parser('diff',
+            help='show diff of files changed (between index and working '
+                 'copy)')
+    sub_parser.add_argument('--staged', action='store_true',
+            help='This form is to view the changes you staged for the '
+            'next commit relative to the HEAD commmit.')
 
     # Hash-object
     sub_parser = sub_parsers.add_parser('hash-object',
@@ -162,7 +167,7 @@ def main():
     elif args.command == 'clone':
         clone(args.name)
     elif args.command == 'diff':
-        diff()
+        diff(args.staged)
     elif args.command == 'fetch':
         fetch()
     elif args.command == 'get-address':
