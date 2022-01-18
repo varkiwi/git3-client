@@ -1,8 +1,8 @@
-from git3Client.gitInternals.gitIndex import get_status
+from git3Client.gitInternals.gitIndex import get_status_workspace
 
 def status():
     """Show status of working copy."""
-    changed, new, deleted = get_status()
+    changed, new, deleted = get_status_workspace()
     if changed:
         print('changed files:')
         for path in changed:
