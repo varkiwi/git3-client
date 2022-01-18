@@ -3,8 +3,28 @@ import struct, os, hashlib
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
+from git3Client.gitInternals.gitCommit import read_commit_entries
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
+
 from git3Client.utils.utils import get_repo_root_path, read_file, write_file, get_active_branch_hash
+
+def get_status_commit():
+    """
+    Get status of HEAD commit, return tuple of
+    (changed_paths, new_paths, deleted_paths).
+    """
+    local_sha1 = get_active_branch_hash()
+    commit_entries = read_commit_entries(local_sha1)
+    commit_paths = set(commit_entries)
+
+    entries_by_path = {e.path: e for e in read_index()}
+    entry_paths = set(entries_by_path)
+
+    changed = {p for p in (commit_paths & entry_paths)
+            if commit_entries[p] != entries_by_path[p].sha1.hex()}
+    deleted = commit_paths - entry_paths
+    new = entry_paths - commit_paths
+    return (sorted(changed), sorted(new), sorted(deleted))
 
 def get_status_workspace():
     """
@@ -22,6 +42,7 @@ def get_status_workspace():
             paths.add(path)
     entries_by_path = {e.path: e for e in read_index()}
     entry_paths = set(entries_by_path)
+    
     changed = {p for p in (paths & entry_paths)
                if hash_object(read_file(p), 'blob', write=False) !=
                   entries_by_path[p].sha1.hex()}
