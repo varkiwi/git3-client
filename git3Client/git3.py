@@ -52,8 +52,10 @@ def main():
     # Checkout
     sub_parser = sub_parsers.add_parser('checkout',
             help='Switch branches')
-    sub_parser.add_argument('-b', '-B', metavar='new_branch',
+    sub_parser.add_argument('-b', metavar='new_branch',
             help='Create a new branch with name new_branch')
+    sub_parser.add_argument('branch', metavar='<branch>',
+            help='Checkout to <branch>')
 
     # Commit
     sub_parser = sub_parsers.add_parser('commit',
@@ -150,6 +152,7 @@ def main():
         else:
             listBranches()
     elif args.command == 'checkout':
+        print(args)
         if args.b is None:
             print('Just a simple checkout')
         else:
