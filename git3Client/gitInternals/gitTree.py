@@ -1,4 +1,4 @@
-import binascii, os, zlib
+import binascii, os, zlib, stat
 
 from .IndexEntry import IndexEntry
 from .fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
@@ -35,8 +35,6 @@ def read_tree(sha1=None, data=None):
     """Read tree object with given SHA-1 (hex string) or data, and return list
     of (mode, path, sha1) tuples.
     """
-    #from .gitObject import read_object
-
     if sha1 is not None:
         obj_type, data = read_object(sha1)
         assert obj_type == 'tree'

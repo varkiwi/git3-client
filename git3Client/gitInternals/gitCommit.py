@@ -1,8 +1,8 @@
 import os, zlib
-#import ipfshttpclient
 
+from .fileMode import GIT_TREE_MODE
 from .gitObject import read_object
-from .gitTree import find_tree_objects, unpack_files_of_tree
+from .gitTree import find_tree_objects, unpack_files_of_tree, read_tree
 
 from git3Client.dlt.storageClient import getStorageClient
 
@@ -88,3 +88,38 @@ def write_commit(commit_object, repo_name):
     if not os.path.exists(path):
         os.makedirs(os.path.dirname(path), exist_ok=True)
         write_file(path, zlib.compress(full_data))
+
+def read_commit_entries(commit_hash):
+    """
+    Reads all files which are stored by the commit with the given hash.
+    Returns a dict of paths relative to the repository root with their hash.
+    """
+    commit_entries = {}
+    # read commit
+    obj_type, commit = read_object(commit_hash)
+    assert obj_type == 'commit'
+    objects = {commit_hash}
+    lines = commit.decode().splitlines()
+
+    # read tree hashes in
+    tree = next(l[5:45] for l in lines if l.startswith('tree '))
+    
+    # read tree content
+    entries = read_tree(tree)
+    i = 0
+    # and get all entries from the tree
+    while i < len(entries):
+        if entries[i][0] == GIT_TREE_MODE:
+            sub_tree = read_tree(entries[i][2])
+            for sub_entry in sub_tree:
+                entries.append((
+                    sub_entry[0],
+                    '{}/{}'.format(entries[i][1], sub_entry[1]),
+                    sub_entry[2],
+                ))
+            del entries[i]
+        else:
+            commit_entries[entries[i][1]] = entries[i][2]
+            i += 1
+
+    return commit_entries

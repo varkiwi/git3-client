@@ -90,3 +90,56 @@ Here is the structure of the database:
    "head_cid":"CID to youngest commit in IPFS"
 }
 ```
+
+# Branching
+The `.git` directory contains a file called `HEAD`. This file contains the following text: `ref: refs/heads/[branchName]`.
+This means that the current branch is `[branchName]`.
+The file in `refs/heads/[branchName]` contains the SHA1  of the commit, which is the head of the branch.
+
+`git` offers two commands:
+```bash
+git checkout <existing_branch>
+
+git checkout -b <new_branch>
+```
+
+## Checkout
+```bash
+git checkout <non_existing_branch>
+error: pathspec <non_existing_branch> did not match any file(s) known to git
+```
+```bash
+git checkout -b <existing_branch>
+fatal: A branch named <existing_branch> already exists.
+```
+
+## Branch
+```bash
+git branch
+```
+returns a list of all branches.
+
+```bash
+git branch <branchname>
+```
+creates a new branch but does not switch to it. Creating a new branch means that a new file is created (`./git/refs/heads/<branchna,e>`) is created. The content of the currently active branch (reference in `.git/HEAD`) is written to this file.
+
+If a branch with the same name already exists, the following error is printed: `fatal: A branch named <branchname> already exists.`
+
+If a new repository has been created and there is no file in `.git/refs/heads/` the following error is printed: `fatal: Not a valid object name: '<branchname>'.`
+
+## Switch
+Switch to a specified branch. The working tree and the index are updated to match the branch. All new commits will be added to the tip of this branch.
+
+
+## Checkout Remote Branch on Git
+
+In some cases, you may be interested in checking out remote branches from your distant repository.
+
+In order to switch to a remote branch, make sure to fetch your remote branch with “git fetch” first. You can then switch to it by executing “git checkout” with the “-t” option and the name of the branch.
+
+```bash
+git fetch
+
+git checkout -t <remote_name>/<branch_name>
+```
