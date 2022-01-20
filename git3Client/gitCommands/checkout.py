@@ -30,5 +30,6 @@ def checkout(branch):
     target_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch)).decode("utf-8").strip()
     
     if current_commit_hash == target_commit_hash:
-        # switch branch
+        # switch branch when the hashes are the same.
+        # we don't have to do anything else
         write_file('{}/.git/HEAD'.format(repo_root_path, branch), 'ref: refs/heads/{}'.format(branch), binary='')
