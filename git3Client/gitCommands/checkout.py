@@ -4,7 +4,7 @@ from git3Client.gitCommands.branch import get_active_branch
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3Client.utils.utils import get_repo_root_path, read_file
+from git3Client.utils.utils import get_repo_root_path, read_file, write_file
 
 def checkout(branch):
     if branch is None:
@@ -25,5 +25,10 @@ def checkout(branch):
     if active_branch == branch:
         print('Already on \'{}\''.format(branch))
         exit(0)
-    # current_commit_hash = read_file('{}/.git/{}'.format(repo_root_path, currentHeadRef)).decode("utf-8")
-    # print(currentHeadRef)
+    
+    current_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, active_branch)).decode("utf-8").strip()
+    target_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch)).decode("utf-8").strip()
+    
+    if current_commit_hash == target_commit_hash:
+        # switch branch
+        write_file('{}/.git/HEAD'.format(repo_root_path, branch), 'ref: refs/heads/{}'.format(branch), binary='')
