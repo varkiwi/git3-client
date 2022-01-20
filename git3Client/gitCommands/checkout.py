@@ -1,8 +1,10 @@
 import os
 
+from git3Client.gitCommands.branch import get_active_branch
+
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3Client.utils.utils import get_repo_root_path
+from git3Client.utils.utils import get_repo_root_path, read_file
 
 def checkout(branch):
     if branch is None:
@@ -13,7 +15,15 @@ def checkout(branch):
     except NoRepositoryError as nre:
         print(nre)
         exit(1)
-    
+    # check if branch exists
     if not os.path.isfile('{}/.git/refs/heads/{}'.format(repo_root_path, branch)):
         print('error: pathspec \'{}\' did not match any file(s) known to git3'.format(branch))
         exit(1)
+
+    active_branch = get_active_branch()
+    
+    if active_branch == branch:
+        print('Already on \'{}\''.format(branch))
+        exit(0)
+    # current_commit_hash = read_file('{}/.git/{}'.format(repo_root_path, currentHeadRef)).decode("utf-8")
+    # print(currentHeadRef)
