@@ -2,6 +2,8 @@ import os
 
 from git3Client.gitCommands.branch import get_active_branch
 
+from git3Client.gitInternals.gitIndex import get_status_workspace, get_status_commit
+
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
 from git3Client.utils.utils import get_repo_root_path, read_file, write_file
@@ -33,3 +35,15 @@ def checkout(branch):
         # switch branch when the hashes are the same.
         # we don't have to do anything else
         write_file('{}/.git/HEAD'.format(repo_root_path, branch), 'ref: refs/heads/{}'.format(branch), binary='')
+
+    changed, new, deleted = get_status_workspace()
+    if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
+        print('error: Your local changes to the following file would be overwritten by checkout:')
+        if changed is not 0:
+            print('  {}'.format(changed[0]))
+        if new is not 0:
+            print('  {}'.format(changed[0]))
+        if deleted is not 0:
+            print('  {}'.format(changed[0]))
+        print('Please commit your changes before you switch branches.')
+        exit(1)

@@ -8,6 +8,7 @@ from git3Client.utils.utils import read_file, get_active_branch_hash
 
 def diff(staged):
     """Show diff of files changed (between index and working copy)."""
+    # checks if there is a diff between index and HEAD
     if staged:
         # we don't use deleted for now, since we don't have git3 rm command
         changed, new, deleted = get_status_commit()
