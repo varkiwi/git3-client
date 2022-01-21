@@ -53,7 +53,7 @@ def main():
     # Checkout
     sub_parser = sub_parsers.add_parser('checkout',
             help='Switch branches')
-    sub_parser.add_argument('-b', metavar='new_branch',
+    sub_parser.add_argument('-b', action='store_true',
             help='Create a new branch with name new_branch')
     sub_parser.add_argument('branch', metavar='<branch>',
             help='Checkout to <branch>')
@@ -153,10 +153,10 @@ def main():
         else:
             listBranches()
     elif args.command == 'checkout':
-        if args.b is None:
+        if args.b is False:
             checkout(args.branch)
         else:
-            createBranch('checkout', args.b)
+            createBranch('checkout', args.branch)
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)

@@ -1,4 +1,4 @@
-import os, requests, zlib, sys
+import os, requests, zlib, sys, shutil
 
 from pathlib import Path
 from Crypto.PublicKey import ECC
@@ -120,6 +120,17 @@ def get_active_branch_hash():
     except FileNotFoundError:
         return None
 
+def remove_files_from_repo():
+    """Remove all files from the repository"""
+    repo_root_path = get_repo_root_path()
+    files = list_files_in_dir(repo_root_path)
+    for file in files:
+        if file != '.git':
+            if os.path.isfile(file):
+                os.remove(os.path.join(repo_root_path, file))
+            else:
+                shutil.rmtree(os.path.join(repo_root_path, file))
+
 def list_files_in_dir(path):
     """List all files in a directory."""
     return os.listdir(path)
@@ -131,5 +142,6 @@ def read_file(path):
 
 def write_file(path, data, binary='b'):
     """Write data bytes to file at given path."""
+    os.makedirs('/'.join(path.split('/')[0:-1]), exist_ok=True)
     with open(path, 'w{}'.format(binary)) as f:
         f.write(data)

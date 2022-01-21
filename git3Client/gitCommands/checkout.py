@@ -3,10 +3,22 @@ import os
 from git3Client.gitCommands.branch import get_active_branch
 
 from git3Client.gitInternals.gitIndex import get_status_workspace, get_status_commit
-
+from git3Client.gitInternals.gitCommit import read_commit_entries
+from git3Client.gitInternals.gitObject import read_object
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3Client.utils.utils import get_repo_root_path, read_file, write_file
+from git3Client.utils.utils import get_repo_root_path, read_file, write_file, remove_files_from_repo
+
+def print_checkout_error(changed, new, deleted):
+    print('error: Your local changes to the following file would be overwritten by checkout:')
+    if len(changed) is not 0:
+        print('  {}'.format(changed[0]))
+    elif len(new) is not 0:
+        print('  {}'.format(new[0]))
+    elif len(deleted) is not 0:
+        print('  {}'.format(deleted[0]))
+    print('Please commit your changes before you switch branches.')
+    exit(1)
 
 def checkout(branch):
     if branch is None:
@@ -38,12 +50,25 @@ def checkout(branch):
 
     changed, new, deleted = get_status_workspace()
     if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
-        print('error: Your local changes to the following file would be overwritten by checkout:')
-        if changed is not 0:
-            print('  {}'.format(changed[0]))
-        if new is not 0:
-            print('  {}'.format(changed[0]))
-        if deleted is not 0:
-            print('  {}'.format(changed[0]))
-        print('Please commit your changes before you switch branches.')
-        exit(1)
+        print_checkout_error(changed, new, deleted)
+    
+    changed, new, deleted = get_status_commit()
+    if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
+        print_checkout_error(changed, new, deleted)
+
+    commit_entries = read_commit_entries(target_commit_hash)
+
+    # we are deleting all the files in the repo
+    # there might be a better way, where we iterate over all of the files,
+    # hash and compare the hashes. If there is no difference, leave as is, otherwise
+    # overwrite. We would also need to check for files which are not in the index!
+    # Maybe something at a later point in time :)
+    remove_files_from_repo()
+
+    for filename in commit_entries:
+        object_type, data = read_object(commit_entries[filename])
+        assert object_type == 'blob'
+        write_file('{}/{}'.format(repo_root_path, filename), data.decode('utf-8'), binary='')
+
+    #todo: update index
+    #todo: update HEAD
