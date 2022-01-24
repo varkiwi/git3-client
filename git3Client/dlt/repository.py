@@ -26,7 +26,7 @@ def get_remote_cid_history():
     return repo_contract.functions.getCidHistory().call()
 
 
-def push_new_cid(cid):
+def push_new_cid(branchName, cid):
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
     if not repo_name.startswith('location:'):
@@ -47,7 +47,7 @@ def push_new_cid(cid):
 
     gas_price = get_current_gas_price()
 
-    create_push_tx = branch_contract.functions.push('main', cid).buildTransaction({
+    create_push_tx = branch_contract.functions.push(branchName, cid).buildTransaction({
         'chainId': CHAINID,
         'gas': 746427,
         'gasPrice': w3.toWei(gas_price, 'gwei'),
@@ -88,8 +88,12 @@ def get_all_remote_commits(commit_cid) -> list:
     """
     all_commits = []
     client = getStorageClient()
-    remote_object = client.get_json(commit_cid)
+    # load remote db
+    remote_db = client.get_json(commit_cid)
+    # load remode cid chain
+    remote_object = client.get_json(remote_db['head_cid'])
     all_commits.append(remote_object)
+
     while len(remote_object['parents']) > 0:
         for parent in remote_object['parents']:
             remote_object = client.get_json(parent)
@@ -111,11 +115,12 @@ def check_if_repo_created():
         #TODO: Throw an exception
         print('No connection. Establish a connection first')
         return False
+
     git_factory = get_factory_contract()
 
     return git_factory.functions.getRepository(user_key).call()[0]
 
-def get_remote_master_hash():
+def get_remote_branch_hash(branchName):
     """
     Get commit hash of remote master branch, return CID or None if no remote commits.
     """
@@ -133,7 +138,7 @@ def get_remote_master_hash():
     git_repo_address = repository[2]
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
     #TODO: Branch name
-    branch = branch_contract.functions.getBranch('main').call()
+    branch = branch_contract.functions.getBranch(branchName).call()
     
     # check if the branch is active
     if not branch[0]:

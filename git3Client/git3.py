@@ -6,6 +6,7 @@ import sys
 from git3Client.gitCommands.add import add
 from git3Client.gitCommands.branch import listBranches, createBranch
 from git3Client.gitCommands.catFile import cat_file
+from git3Client.gitCommands.checkout import checkout
 from git3Client.gitCommands.clone import clone
 from git3Client.gitCommands.commit import commit
 from git3Client.gitCommands.create import create
@@ -52,8 +53,10 @@ def main():
     # Checkout
     sub_parser = sub_parsers.add_parser('checkout',
             help='Switch branches')
-    sub_parser.add_argument('-b', '-B', metavar='new_branch',
+    sub_parser.add_argument('-b', action='store_true',
             help='Create a new branch with name new_branch')
+    sub_parser.add_argument('branch', metavar='<branch>',
+            help='Checkout to <branch>')
 
     # Commit
     sub_parser = sub_parsers.add_parser('commit',
@@ -150,10 +153,10 @@ def main():
         else:
             listBranches()
     elif args.command == 'checkout':
-        if args.b is None:
-            print('Just a simple checkout')
+        if args.b is False:
+            checkout(args.branch)
         else:
-            createBranch('checkout', args.b)
+            createBranch('checkout', args.branch)
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)
