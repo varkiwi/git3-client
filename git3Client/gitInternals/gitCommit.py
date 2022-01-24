@@ -123,6 +123,3 @@ def read_commit_entries(commit_hash):
             i += 1
 
     return commit_entries
-
-def unpack_git_commit(commit_hash):
-    print('Time to unpack commit {}'.format(commit_hash))

@@ -37,6 +37,8 @@ def main():
     # Branch
     sub_parser = sub_parsers.add_parser('branch',
             help='List and Create branches')
+    sub_parser.add_argument('-r', '--remotes', action='store_true',
+            help='act on remote-tracking branches')
     sub_parser = sub_parser.add_argument('branchname', metavar='<branchname>', nargs='?',
             help='Create a new branch named <branchname>')
 
@@ -151,7 +153,7 @@ def main():
         if args.branchname:
             createBranch(args.command, args.branchname)
         else:
-            listBranches()
+            listBranches(args.remotes)
     elif args.command == 'checkout':
         if args.b is False:
             checkout(args.branch)
