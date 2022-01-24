@@ -1,16 +1,20 @@
 from git3Client.dlt.repository import check_if_repo_created, push_commit, push_new_cid
-from git3Client.dlt.repository import check_if_remote_ahead, get_remote_master_hash
+from git3Client.dlt.repository import check_if_remote_ahead, get_remote_branch_hash
 from git3Client.dlt.storageClient import getStorageClient
 
-from git3Client.utils.utils import get_active_branch_hash
+from git3Client.utils.utils import get_active_branch_hash, get_current_branch_name
 
 def push():
     """Push master branch to given git repo URL.""" 
     if not check_if_repo_created():
         print('Repository has not been registered yet. Use\n\n`git3 create`\n\nbefore you push')
         return
+
+    active_branch_name = get_current_branch_name()
+
     local_sha1 = get_active_branch_hash()
-    remote_cid = get_remote_master_hash()
+    remote_cid = get_remote_branch_hash(active_branch_name)
+
     client = getStorageClient()
     # if remote_cid is none, nothing has been pushed yet.
     if remote_cid != None:
@@ -24,6 +28,7 @@ def push():
         remote_database = {
             'files': {}
         }
+
     remote_database['path'] = ['files']
 
     if local_sha1 == remote_sha1:
@@ -45,4 +50,4 @@ def push():
         del remote_database['currentCommitMessage']
         master_cid = client.add_json(remote_database)
         print('Going to write the CID into repository contract')
-        push_new_cid(master_cid)
+        push_new_cid(active_branch_name, master_cid)
