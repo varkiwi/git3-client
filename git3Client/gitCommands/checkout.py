@@ -1,6 +1,7 @@
 import os
 
-from git3Client.gitCommands.branch import get_active_branch
+from git3Client.gitCommands.add import add
+from git3Client.gitCommands.branch import get_active_branch, update_HEAD
 
 from git3Client.gitInternals.gitIndex import get_status_workspace, get_status_commit
 from git3Client.gitInternals.gitCommit import read_commit_entries
@@ -65,10 +66,16 @@ def checkout(branch):
     # Maybe something at a later point in time :)
     remove_files_from_repo()
 
+    files_to_add = []
+
     for filename in commit_entries:
         object_type, data = read_object(commit_entries[filename])
         assert object_type == 'blob'
         write_file('{}/{}'.format(repo_root_path, filename), data.decode('utf-8'), binary='')
+        files_to_add.append(filename)
 
-    #todo: update index
-    #todo: update HEAD
+    # remove index file
+    os.remove('{}/.git/index'.format(repo_root_path))
+    add(files_to_add)
+    update_HEAD(repo_root_path, branch)
+    print('Switched to branch \'{}\''.format(newBranchName))

@@ -55,7 +55,8 @@ def createBranch(command, newBranchName):
     
     if command == 'checkout':
         # in case of git switch or checkout, the HEAD file is updated
-        write_file('{}/.git/HEAD'.format(repo_root_path, newBranchName), 'ref: refs/heads/{}'.format(newBranchName), binary='')
+        update_HEAD(repo_root_path, newBranchName)
+        print('Switched to a new branch \'{}\''.format(newBranchName))
 
 def get_active_branch():
     """
@@ -67,3 +68,7 @@ def get_active_branch():
         print(nre)
         exit(1)
     return read_file('{}/.git/HEAD'.format(repo_root_path)).decode("utf-8").split('ref:')[1].strip().split('/')[-1]
+
+
+def update_HEAD(pathToRepo, newBranchName):
+    write_file('{}/.git/HEAD'.format(pathToRepo), 'ref: refs/heads/{}'.format(newBranchName), binary='')
