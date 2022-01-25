@@ -9,7 +9,7 @@ def init(repo):
     """
     if os.path.exists(os.path.join(repo, '.git')):
         print(f"Repository {repo} exists already")
-        return
+        return False
 
     cwd = os.getcwd()
     if repo != '.':
@@ -30,3 +30,4 @@ def init(repo):
     write_file(os.path.join(repo, '.git', 'name'), str.encode('name: ' + repoName))
     
     print('Initialized empty Git3 repository in: {}/.git/'.format(fullPath))
+    return True

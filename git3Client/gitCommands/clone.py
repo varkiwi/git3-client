@@ -42,8 +42,10 @@ def clone(repo_name):
             main_cid = branch[1]
 
     print('Cloning {:s}'.format(repo_name))
+
     # initialize repository
-    init(repo_name)
+    if not init(repo_name):
+        return
 
     # get all remote commits
     for head_cid in head_cids:
