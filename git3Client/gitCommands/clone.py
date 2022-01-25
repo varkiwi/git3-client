@@ -31,23 +31,39 @@ def clone(repo_name):
     
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
     
-    branch = branch_contract.functions.getBranch('main').call()
-    headCid = branch[1]
+    branches = branch_contract.functions.getBranchNames().call()
+
+    head_cids = set()
+    for branch_name in branches:
+        branch = branch_contract.functions.getBranch(branch_name).call()
+        head_cids.add(branch[1])
+        # commits = get_all_remote_commits(branch[1])
+        if branch_name == 'main':
+            main_cid = branch[1]
+
     print('Cloning {:s}'.format(repo_name))
-    
     # initialize repository
     init(repo_name)
-    # get all remote commits
-    all_commits = get_all_remote_commits(headCid)
 
-    #unpack files from the newest commit
-    first = True
-    for commit in all_commits:
-        unpack_files_of_commit(repo_name, commit, first)
-        first = False
-    # write to refs
-    master_path = os.path.join(repo_name, '.git', 'refs', 'heads', 'master')
-    write_file(master_path, (all_commits[0]['sha1'] + '\n').encode())
+    # get all remote commits
+    for head_cid in head_cids:
+        commits = get_all_remote_commits(head_cid)
+        
+        # we are going to unpack only the files for the main branch. Commits and all
+        # other git objects should be still downloaded
+        if head_cid == main_cid:
+            # write to refs
+            main_ref_path = os.path.join(repo_name, '.git', 'refs', 'heads', 'main')
+            write_file(main_ref_path, (commits[0]['sha1'] + '\n').encode())      
+            first = True
+        else:
+            first = False
+
+        for commit in commits:
+            unpack_files_of_commit(repo_name, commit, first)
+            first = False
+
+
     #chaning into repo, also for add function, in order to find the index file
     os.chdir(repo_name)
     write_file(os.path.join('.git', 'name'), str.encode('location: ' + user_key))
