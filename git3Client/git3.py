@@ -117,6 +117,9 @@ def main():
     # Fetch
     sub_parser = sub_parsers.add_parser('fetch',
             help='Download object and refs from another repository')
+    sub_parser.add_argument('branch',
+            nargs='?',
+            help='branch data to fetch')
 
     # Get-Address
     sub_parser = sub_parsers.add_parser('get-address',
@@ -174,7 +177,7 @@ def main():
     elif args.command == 'diff':
         diff(args.staged)
     elif args.command == 'fetch':
-        fetch()
+        fetch(args.branch)
     elif args.command == 'get-address':
         address = getAddress()
         print('Your address is: {}'.format(address))

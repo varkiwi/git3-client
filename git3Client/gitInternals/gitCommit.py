@@ -28,6 +28,9 @@ def get_all_local_commits(commit_hash):
     Returns a list contains all hashes of the local commits
     starting from the given parameter commit_hash
     """
+    if commit_hash == None:
+        return []
+
     all_commits = []
     parents = []
 

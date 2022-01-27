@@ -120,6 +120,15 @@ def get_active_branch_hash():
     except FileNotFoundError:
         return None
 
+def get_branch_hash(branchName):
+    """Get commit hash (SHA-1 string) of a branch."""
+    repo_root_path = get_repo_root_path()
+    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', branchName)
+    try:
+        return read_file(branch_path).decode().strip()
+    except FileNotFoundError:
+        return None
+
 def remove_files_from_repo():
     """Remove all files from the repository"""
     repo_root_path = get_repo_root_path()
