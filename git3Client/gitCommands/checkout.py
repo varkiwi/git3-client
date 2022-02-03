@@ -30,24 +30,48 @@ def checkout(branch):
     except NoRepositoryError as nre:
         print(nre)
         exit(1)
-    # check if branch exists
-    if not os.path.isfile('{}/.git/refs/heads/{}'.format(repo_root_path, branch)):
-        print('error: pathspec \'{}\' did not match any file(s) known to git3'.format(branch))
-        exit(1)
 
     active_branch = get_active_branch()
-    
+
     if active_branch == branch:
         print('Already on \'{}\''.format(branch))
         exit(0)
+
+    # boolen to see if the commit hash is taken from the packed-refs file
+    from_packed_refs = False
+
+    # check if branch exists
+    # first we check if git/refs/heads exists. If it does exist
+    if os.path.isfile('{}/.git/refs/heads/{}'.format(repo_root_path, branch)):
+        # we load the commit hash
+        target_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch)).decode("utf-8").strip()
+    else:
+        # if it does not exist, we check if packed-refs exists
+        if os.path.isfile('{}/.git/packed-refs'.format(repo_root_path)):
+            # in case it exists, we check if the branch exists in packed-refs
+            packed_refs_content = read_file('{}/.git/packed-refs'.format(repo_root_path)).decode("utf-8")
+            if branch in packed_refs_content:
+                # get the commit hash
+                from_packed_refs = True
+                target_commit_hash = packed_refs_content.split('refs/remotes/origin/{}\n'.format(branch))[0].split('\n')[-1].strip()
+        else:
+            # if does not exist, we exit
+            print('error: pathspec \'{}\' did not match any file(s) known to git3'.format(branch))
+            exit(1)
     
     current_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, active_branch)).decode("utf-8").strip()
-    target_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch)).decode("utf-8").strip()
     
+    # if the commit hash has been taken from the packed-refs, we need to write
+    # the .git/refs/heads/<branch> file
+    if from_packed_refs:
+        print('Branch \'{}\' set up to track remote branch \'{}\' from \'origin\'.'.format(branch, branch))
+        write_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch), target_commit_hash, binary='')
+
     if current_commit_hash == target_commit_hash:
         # switch branch when the hashes are the same.
         # we don't have to do anything else
         write_file('{}/.git/HEAD'.format(repo_root_path, branch), 'ref: refs/heads/{}'.format(branch), binary='')
+        exit(0)
 
     changed, new, deleted = get_status_workspace()
     if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
@@ -78,4 +102,4 @@ def checkout(branch):
     os.remove('{}/.git/index'.format(repo_root_path))
     add(files_to_add)
     update_HEAD(repo_root_path, branch)
-    print('Switched to branch \'{}\''.format(newBranchName))
+    print('Switched to branch \'{}\''.format(branch))

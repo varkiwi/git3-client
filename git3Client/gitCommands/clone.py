@@ -40,7 +40,7 @@ def clone(repo_name):
     for branch_name in branches:
         branch = branch_contract.functions.getBranch(branch_name).call()
         head_cids.add(branch[1])
-        packed_refs_content += '{} refs/remote/origin/{}\n'.format(branch[1], branch_name)
+        packed_refs_content += '{} refs/remotes/origin/{}\n'.format(branch[1], branch_name)
         if branch_name == 'main':
             main_cid = branch[1]
 
