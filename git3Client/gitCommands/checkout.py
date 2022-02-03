@@ -46,8 +46,12 @@ def checkout(branch):
         # we load the commit hash
         target_commit_hash = read_file('{}/.git/refs/heads/{}'.format(repo_root_path, branch)).decode("utf-8").strip()
     else:
+        # if it doesn't exist, we check if the FETCH_HEAD file exists
+        if os.path.isfile('{}/.git/FETCH_HEAD'.format(repo_root_path)):
+            fetch_head_content = read_file('{}/.git/FETCH_HEAD'.format(repo_root_path)).decode('utf-8')
+            target_commit_hash = fetch_head_content.split('branch \'{}\''.format(branch))[0].split('\n')[-1].split('\t')[0].strip()
         # if it does not exist, we check if packed-refs exists
-        if os.path.isfile('{}/.git/packed-refs'.format(repo_root_path)):
+        elif os.path.isfile('{}/.git/packed-refs'.format(repo_root_path)):
             # in case it exists, we check if the branch exists in packed-refs
             packed_refs_content = read_file('{}/.git/packed-refs'.format(repo_root_path)).decode("utf-8")
             if branch in packed_refs_content:
