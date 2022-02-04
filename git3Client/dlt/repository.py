@@ -146,28 +146,6 @@ def get_remote_branch_hash(branchName):
     # if active, return head cid
     return branch[1]
 
-def get_remote_branches():
-    """
-    Returns a list of remote branches.
-    """
-    git_factory = get_factory_contract()
-    repo_name = read_repo_name()
-
-    if not repo_name.startswith('location:'):
-        return
-    user_key = repo_name.split('location:')[1].strip()
-    
-    repository = git_factory.functions.getRepository(user_key).call()
-    
-    if not repository[0]:
-        print('No such repository')
-        return
-    git_repo_address = repository[2]
-
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
-    return branch_contract.functions.getBranchNames().call()
-
-
 def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
     """
     Takes a tree hash and a folder name and pushed the blobs and tree to a remote storage.

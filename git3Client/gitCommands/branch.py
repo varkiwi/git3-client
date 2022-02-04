@@ -1,22 +1,22 @@
-import os
+import os, re
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-
-from git3Client.dlt.repository import get_remote_branches
 
 from git3Client.utils.utils import list_files_in_dir, get_repo_root_path, read_file, write_file
 
 def listBranches(remotes):
     """Add all file paths to git index."""
-    if remotes:
-        branches = get_remote_branches()
-    else:
-        try:
-            repo_root_path = get_repo_root_path()
-        except NoRepositoryError as nre:
-            print(nre)
-            exit(1)
+    try:
+        repo_root_path = get_repo_root_path()
+    except NoRepositoryError as nre:
+        print(nre)
+        exit(1)
 
+    # if remotes flag is set, read remote branches from packed-refs file    
+    if remotes:
+        packed_refs_content = read_file('{}/.git/packed-refs'.format(repo_root_path)).decode('utf-8')
+        branches = re.findall('refs\/remotes\/origin\/(\w*)', packed_refs_content)
+    else:
         branches = list_files_in_dir('{}/.git/refs/heads'.format(repo_root_path))
     
     branches.sort()
