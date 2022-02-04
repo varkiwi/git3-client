@@ -104,11 +104,3 @@ def fetch(branchName):
   
     path = os.path.join(repo_root_path, '.git', 'FETCH_HEAD')
     write_file(path, fetch_head_data, '')
-    # ============================================================================
-
-    # path = os.path.join(repo_root_path, '.git', 'refs/remote/origin/{}'.branchName)
-
-    # if not os.path.exists(path):
-    #     os.makedirs(os.path.dirname(path), exist_ok=True)
-        
-    # write_file(path, remote_commits_sha1[0].encode())
