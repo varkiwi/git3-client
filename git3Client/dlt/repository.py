@@ -122,7 +122,7 @@ def check_if_repo_created():
 
 def get_remote_branch_hash(branchName):
     """
-    Get commit hash of remote master branch, return CID or None if no remote commits.
+    Get commit hash of remote branch branchName, return CID or None if no remote commits.
     """
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
