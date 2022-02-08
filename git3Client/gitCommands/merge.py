@@ -53,14 +53,15 @@ def merge(source_branch):
             # if the file exists, we read the sha1 from it
             remote_sha1 = read_file(source_branch_head_path).decode('utf-8')
 
-    print('Remote sha1', remote_sha1)
-
     if remote_sha1 is None:
         print('merge: {} - not something we can merge'.format(source_branch))
         exit(1)
 
     activeBranch = get_current_branch_name()
     local_sha1 = get_active_branch_hash()
+
+    remote_sha1 = remote_sha1.strip()
+    local_sha1 = local_sha1.strip()
 
     if remote_sha1 == local_sha1:
        return
@@ -73,7 +74,7 @@ def merge(source_branch):
         #fast forward strategy
         path = os.path.join(repo_root_path, '.git/refs/heads/{}'.format(activeBranch))
         write_file(path, "{}\n".format(remote_sha1).encode())
-        obj_type, commit_data = read_object(remote_sha1)
+        obj_type, commit_data = read_object(remote_sha1.strip())
         tree_sha1 = commit_data.decode().splitlines()[0][5:45]
         unpack_object(tree_sha1, repo_root_path, repo_root_path)
         return
@@ -154,7 +155,7 @@ def merge(source_branch):
             # writing the merged lines into the file
             with open(os.path.join(repo_root_path, f), 'w') as file:
                 for line in merged_lines:
-                    file.write(line)
+                    file.write('{}\n'.format(line))
             if had_conflict:
                 # adding file to list, so that we don't add it to the index
                 conflict_files.append(f)
