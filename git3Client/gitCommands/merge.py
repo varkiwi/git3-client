@@ -1,4 +1,4 @@
-import difflib, os
+import difflib, os, re
 
 from git3Client.dlt.contract import get_factory_contract
 
@@ -9,21 +9,57 @@ from git3Client.gitInternals.gitCommit import get_all_local_commits
 from git3Client.gitInternals.gitObject import read_object, unpack_object
 from git3Client.gitInternals.gitTree import get_subtree_entries
 
-from git3Client.utils.utils import get_repo_root_path, get_active_branch_hash, read_repo_name, read_file, write_file
+from git3Client.utils.utils import get_repo_root_path, get_active_branch_hash, read_repo_name, read_file, write_file, get_current_branch_name
 
-def merge():
+def merge(source_branch):
     """
-    Merges two branches. Since we currently support only one branch, merge takes the commit from FETCH_HEAD for now
+    Merges two branches. If the source_branch parameter is set, the source branch is merged into the current branch.
+    If the parameter is not set, a merge from FETCH_HEAD is performed.
     """
     had_conflict = False
     repo_root_path = get_repo_root_path()
-    fetch_head_path = os.path.join(repo_root_path, '.git', 'FETCH_HEAD')
-    if not os.path.exists(fetch_head_path):
-        print('Nothing to merge. Have you called fetch before?')
-        return
-    fetch_head = read_file(fetch_head_path)
+    # if no source branch for merge is give, we go through the FETCH_HEAD file
+    if source_branch is None:
+        fetch_head_path = os.path.join(repo_root_path, '.git/FETCH_HEAD')
+        if not os.path.exists(fetch_head_path):
+            print('Nothing to merge. Have you called fetch before?')
+            return
+        fetch_head_content = read_file(fetch_head_path).decode('utf-8')
 
-    remote_sha1 = fetch_head.decode()[0:40]
+        findings = re.findall('^([ABCDEFabcdef0-9]+)\s+branch (\w|\')+', fetch_head_content)
+        if len(findings) == 0:
+            remote_sha1 = None
+        else:
+            remote_sha1 = findings[0][0]
+    else:
+        # otherwise we are looking for the refs file first.
+        source_branch_head_path = os.path.join(repo_root_path, '.git/refs/heads/', source_branch)
+        if not os.path.exists(source_branch_head_path):
+            # if the refs file does not exist, we are having a look if the packed-refs file exits
+            # git doesn't use the FETCH_HEAD file when a branch name is given!
+            packed_refs_path = os.path.join(repo_root_path, '.git/packed-refs')
+            if not os.path.exists(packed_refs_path):
+                # if not, we are printing an error message and return
+                remote_sha1 = None
+            # otherwise we read the packed-refs file
+            packed_refs_content = read_file(packed_refs_path).decode('utf-8')
+            # and read the commit hash
+            findings = re.findall('([ABCDEFabcdef0-9]*) refs\/remotes\/origin\/{}'.format(source_branch), packed_refs_content)
+            if len(findings) == 0:
+                remote_sha1 = None
+            else:
+                remote_sha1 = findings[0]
+        else:
+            # if the file exists, we read the sha1 from it
+            remote_sha1 = read_file(source_branch_head_path).decode('utf-8')
+
+    print('Remote sha1', remote_sha1)
+
+    if remote_sha1 is None:
+        print('merge: {} - not something we can merge'.format(source_branch))
+        exit(1)
+
+    activeBranch = get_current_branch_name()
     local_sha1 = get_active_branch_hash()
 
     if remote_sha1 == local_sha1:
@@ -35,12 +71,13 @@ def merge():
     
     if len(difference) == 0:
         #fast forward strategy
-        path = os.path.join(repo_root_path, '.git/refs/heads/master')
+        path = os.path.join(repo_root_path, '.git/refs/heads/{}'.format(activeBranch))
         write_file(path, "{}\n".format(remote_sha1).encode())
         obj_type, commit_data = read_object(remote_sha1)
         tree_sha1 = commit_data.decode().splitlines()[0][5:45]
         unpack_object(tree_sha1, repo_root_path, repo_root_path)
         return
+
     # non fast forward strategy
     intersection = set(local_commits).intersection(remote_commits)
     for commit_hash in remote_commits:
@@ -140,9 +177,13 @@ def merge():
                         return False
                     user_key = repo_name.split('location:')[1].strip()
                     git_factory = get_factory_contract()
-                    # git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
+
                     repository = git_factory.functions.getRepository(user_key).call()
-                    write_file(path, 'Merge branch \'main\' of {} into main\n\n# Conflicts\n# \t{}\n'.format(repository[2], f).encode())
+                    write_file(
+                        path,
+                        'Merge branch \'{}\' of {} into {}\n\n# Conflicts\n# \t{}\n'
+                            .format(source_branch, repository[2], activeBranch, f).encode()
+                    )
 
     # adding all the files to the index. TODO: can be more efficient if we add it to the previous loop
     files_to_add = []
@@ -157,7 +198,7 @@ def merge():
     add(files_to_add)
     # creating a commit object with two parents
     if not had_conflict:
-        commit('Merging remote into master', parent1=local_commits[0], parent2=remote_commits[0])
+        commit('Merging {} into {}'.format(source_branch, activeBranch), parent1=local_commits[0], parent2=remote_commits[0])
     
 
 def drop_inline_diffs(diff):

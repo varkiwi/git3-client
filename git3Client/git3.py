@@ -128,6 +128,9 @@ def main():
     # Merge
     sub_parser = sub_parsers.add_parser('merge',
             help='Join two or more development histories together')
+    sub_parser.add_argument('sourceBranch',
+            nargs='?',
+            help='branch to be merged into the current branch')
 
     # Push
     sub_parser = sub_parsers.add_parser('push',
@@ -188,7 +191,7 @@ def main():
     elif args.command == 'ls-files':
         ls_files(details=args.stage)
     elif args.command == 'merge':
-        merge()
+        merge(args.sourceBranch)
     elif args.command == 'push':
         push()
     elif args.command == 'pull':
