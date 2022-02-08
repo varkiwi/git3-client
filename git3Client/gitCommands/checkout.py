@@ -39,6 +39,7 @@ def checkout(branch):
 
     # boolen to see if the commit hash is taken from the packed-refs file
     from_packed_refs = False
+    target_commit_hash = None
 
     # check if branch exists
     # first we check if git/refs/heads exists. If it does exist
