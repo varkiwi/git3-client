@@ -37,11 +37,15 @@ def clone(repo_name):
     packed_refs_content = ""
     head_cids = set()
 
+    main_cid = None
+
+    default_branch_name = 'main' if 'main' in branches else branches[0]
+
     for branch_name in branches:
         branch = branch_contract.functions.getBranch(branch_name).call()
         head_cids.add(branch[1])
         packed_refs_content += '{} refs/remotes/origin/{}\n'.format(branch[1], branch_name)
-        if branch_name == 'main':
+        if branch_name == default_branch_name:
             main_cid = branch[1]
 
     print('Cloning {:s}'.format(repo_name))
@@ -60,8 +64,10 @@ def clone(repo_name):
         # other git objects should be still downloaded
         if head_cid == main_cid:
             # write to refs
-            main_ref_path = os.path.join(repo_name, '.git', 'refs', 'heads', 'main')
-            write_file(main_ref_path, (commits[0]['sha1'] + '\n').encode())      
+            main_ref_path = os.path.join(repo_name, '.git', 'refs', 'heads', default_branch_name)
+            write_file(main_ref_path, (commits[0]['sha1'] + '\n').encode())
+            head_ref_path = os.path.join(repo_name, '.git', 'HEAD')
+            write_file(head_ref_path, ('ref: refs/heads/{}\n'.format(default_branch_name)).encode())
             first = True
         else:
             first = False
