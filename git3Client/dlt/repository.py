@@ -98,6 +98,7 @@ def get_all_remote_commits(commit_cid) -> list:
         for parent in remote_object['parents']:
             remote_object = client.get_json(parent)
             all_commits.append(remote_object)
+
     return all_commits
 
 def check_if_repo_created():

@@ -62,7 +62,7 @@ def main():
 
     # Commit
     sub_parser = sub_parsers.add_parser('commit',
-            help='commit current state of index to master branch')
+            help='commit current state of index to current active branch')
     sub_parser.add_argument('-a', '--author',
             help='commit author in format "A U Thor <author@example.com>" '
                  '(uses GIT_AUTHOR_NAME and GIT_AUTHOR_EMAIL environment '
@@ -134,7 +134,7 @@ def main():
 
     # Push
     sub_parser = sub_parsers.add_parser('push',
-            help='push master branch to given git server URL')
+            help='push current active branch to given git server URL')
     #sub_parser.add_argument('git_url',
     #        help='URL of git repo, eg: https://github.com/benhoyt/pygit.git')
     #sub_parser.add_argument('-p', '--password',
