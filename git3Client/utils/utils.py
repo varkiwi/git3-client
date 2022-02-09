@@ -111,10 +111,19 @@ def get_current_branch_name():
     return branchName
 
 def get_active_branch_hash():
-    """Get current commit hash (SHA-1 string) of local master branch."""
+    """Get current commit hash (SHA-1 string) of local active branch."""
     repo_root_path = get_repo_root_path()
     activeBranch = get_current_branch_name()
     branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', activeBranch)
+    try:
+        return read_file(branch_path).decode().strip()
+    except FileNotFoundError:
+        return None
+
+def get_branch_hash(branchName):
+    """Get commit hash (SHA-1 string) of a branch."""
+    repo_root_path = get_repo_root_path()
+    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', branchName)
     try:
         return read_file(branch_path).decode().strip()
     except FileNotFoundError:

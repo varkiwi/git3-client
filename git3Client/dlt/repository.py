@@ -98,6 +98,7 @@ def get_all_remote_commits(commit_cid) -> list:
         for parent in remote_object['parents']:
             remote_object = client.get_json(parent)
             all_commits.append(remote_object)
+
     return all_commits
 
 def check_if_repo_created():
@@ -122,7 +123,7 @@ def check_if_repo_created():
 
 def get_remote_branch_hash(branchName):
     """
-    Get commit hash of remote master branch, return CID or None if no remote commits.
+    Get commit hash of remote branch branchName, return CID or None if no remote commits.
     """
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
@@ -137,7 +138,7 @@ def get_remote_branch_hash(branchName):
         return
     git_repo_address = repository[2]
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
-    #TODO: Branch name
+
     branch = branch_contract.functions.getBranch(branchName).call()
     
     # check if the branch is active

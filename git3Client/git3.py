@@ -37,6 +37,8 @@ def main():
     # Branch
     sub_parser = sub_parsers.add_parser('branch',
             help='List and Create branches')
+    sub_parser.add_argument('-r', '--remotes', action='store_true',
+            help='act on remote-tracking branches')
     sub_parser = sub_parser.add_argument('branchname', metavar='<branchname>', nargs='?',
             help='Create a new branch named <branchname>')
 
@@ -60,7 +62,7 @@ def main():
 
     # Commit
     sub_parser = sub_parsers.add_parser('commit',
-            help='commit current state of index to master branch')
+            help='commit current state of index to current active branch')
     sub_parser.add_argument('-a', '--author',
             help='commit author in format "A U Thor <author@example.com>" '
                  '(uses GIT_AUTHOR_NAME and GIT_AUTHOR_EMAIL environment '
@@ -115,6 +117,9 @@ def main():
     # Fetch
     sub_parser = sub_parsers.add_parser('fetch',
             help='Download object and refs from another repository')
+    sub_parser.add_argument('branch',
+            nargs='?',
+            help='branch data to fetch')
 
     # Get-Address
     sub_parser = sub_parsers.add_parser('get-address',
@@ -123,10 +128,13 @@ def main():
     # Merge
     sub_parser = sub_parsers.add_parser('merge',
             help='Join two or more development histories together')
+    sub_parser.add_argument('sourceBranch',
+            nargs='?',
+            help='branch to be merged into the current branch')
 
     # Push
     sub_parser = sub_parsers.add_parser('push',
-            help='push master branch to given git server URL')
+            help='push current active branch to given git server URL')
     #sub_parser.add_argument('git_url',
     #        help='URL of git repo, eg: https://github.com/benhoyt/pygit.git')
     #sub_parser.add_argument('-p', '--password',
@@ -151,7 +159,7 @@ def main():
         if args.branchname:
             createBranch(args.command, args.branchname)
         else:
-            listBranches()
+            listBranches(args.remotes)
     elif args.command == 'checkout':
         if args.b is False:
             checkout(args.branch)
@@ -172,7 +180,7 @@ def main():
     elif args.command == 'diff':
         diff(args.staged)
     elif args.command == 'fetch':
-        fetch()
+        fetch(args.branch)
     elif args.command == 'get-address':
         address = getAddress()
         print('Your address is: {}'.format(address))
@@ -183,7 +191,7 @@ def main():
     elif args.command == 'ls-files':
         ls_files(details=args.stage)
     elif args.command == 'merge':
-        merge()
+        merge(args.sourceBranch)
     elif args.command == 'push':
         push()
     elif args.command == 'pull':

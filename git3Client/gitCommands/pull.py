@@ -3,10 +3,14 @@ import os
 from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.repository import get_all_remote_commits
 
-from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit
-from git3Client.gitInternals.gitIndex import get_status_workspace, is_stage_empty
+from git3Client.gitCommands.fetch import fetch
+from git3Client.gitCommands.add import add
 
-from git3Client.utils.utils import read_repo_name, get_repo_root_path, read_file, write_file
+from git3Client.gitInternals.gitCommit import get_all_local_commits, unpack_files_of_commit, read_commit_entries
+from git3Client.gitInternals.gitIndex import get_status_workspace, is_stage_empty
+from git3Client.gitInternals.gitObject import read_object
+
+from git3Client.utils.utils import read_repo_name, get_repo_root_path, read_file, write_file, get_active_branch_hash, get_current_branch_name, remove_files_from_repo
 
 def pull():
     print('Pulling')
@@ -31,24 +35,23 @@ def pull():
         print('No such repository')
         return
     git_repo_address = repository[2]
-    #repo_contract = get_repository_contract(git_repo_address)
+
+    activeBranch = get_current_branch_name()
+
     branch_contract = get_facet_contract("GitBranch", git_repo_address)
-    branch = branch_contract.functions.getBranch('main').call()
+
+    branch = branch_contract.functions.getBranch(activeBranch).call()
     headCid = branch[1]
-    # repo_contract = get_repository_contract(git_repo_address)
-    # headCid = repo_contract.functions.headCid().call()
-    
-    remote_commits = get_all_remote_commits(headCid, repo_name)
-    # print(remote_commits)
+
+    remote_commits = get_all_remote_commits(headCid)
+
     #extract only the sha1 hash
     remote_commits_sha1 = [e['sha1'] for e in remote_commits]
-    # print('Remote commits:', remote_commits_sha1)
 
     root_path = get_repo_root_path()
-    #TODO: for branching this has to be resolved differently, through the HEAD file
-    local_commit = read_file('/'.join([root_path, '.git/refs/heads/master'])).decode().strip()
+    local_commit = get_active_branch_hash()
     local_commits = get_all_local_commits(local_commit)
-    # print('Local commits: ', local_commits)
+
     if local_commits[0] == remote_commits_sha1[0]:
         print('Already up to date')
         return
@@ -73,12 +76,26 @@ def pull():
         for commit in remote_commits:
             unpack_files_of_commit(root_path, commit, first)
             first = False
-        master_path = os.path.join(root_path, '.git', 'refs', 'heads', 'master')
-        write_file(master_path, (remote_commits[0]['sha1'] + '\n').encode())
+        refs_path = os.path.join(root_path, '.git', 'refs', 'heads', activeBranch)
+        write_file(refs_path, (remote_commits[0]['sha1'] + '\n').encode())
 
-    ################################################
-    #print(local_to_remote_difference, len(local_to_remote_difference))
-    #TODO: get all remote and local commits and get the difference
-    #use the difference to know which commits and trees need to be downloaded
-    #Go through the most recent commit, get the trees and files and merge those with the local files
-    #Go throug all other commits and unpack the commits and trees
+        # we are deleting all the files in the repo
+        # there might be a better way, where we iterate over all of the files,
+        # hash and compare the hashes. If there is no difference, leave as is, otherwise
+        # overwrite. We would also need to check for files which are not in the index!
+        # Maybe something at a later point in time :)
+        # Same at checkout
+        commit_entries = read_commit_entries(remote_commits[0]['sha1'])
+        remove_files_from_repo()
+
+        files_to_add = []
+
+        for filename in commit_entries:
+            object_type, data = read_object(commit_entries[filename])
+            assert object_type == 'blob'
+            write_file('{}/{}'.format(root_path, filename), data.decode('utf-8'), binary='')
+            files_to_add.append(filename)
+
+        # remove index file
+        os.remove('{}/.git/index'.format(root_path))
+        add(files_to_add)

@@ -28,6 +28,9 @@ def get_all_local_commits(commit_hash):
     Returns a list contains all hashes of the local commits
     starting from the given parameter commit_hash
     """
+    if commit_hash == None:
+        return []
+
     all_commits = []
     parents = []
 
@@ -123,6 +126,3 @@ def read_commit_entries(commit_hash):
             i += 1
 
     return commit_entries
-
-def unpack_git_commit(commit_hash):
-    print('Time to unpack commit {}'.format(commit_hash))
