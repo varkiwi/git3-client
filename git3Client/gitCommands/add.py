@@ -1,4 +1,5 @@
-import os, operator
+import os
+import operator
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
@@ -10,7 +11,16 @@ from git3Client.gitInternals.IndexEntry import IndexEntry
 from git3Client.utils.utils import get_repo_root_path, read_file
 
 def add(paths):
-    """Add all file paths to git index."""
+    """
+    Add all file paths to git index.
+
+    Args:
+        paths (List): List of files to be added to the git index.
+    
+    Raises:
+        NoRepositoryError: If not git repository is found.
+        FileNotFoundError: If a file to be added to the index is not found.
+    """
     try:
         repo_root_path = get_repo_root_path()
     except NoRepositoryError as nre:
@@ -25,7 +35,7 @@ def add(paths):
 
     try:
         all_entries = read_index()
-    except errors.NoRepositoryError as nre:
+    except NoRepositoryError as nre:
         print(nre)
         exit(1)
 

@@ -2,10 +2,15 @@ import os
 
 from git3Client.utils.utils import write_file
 
-def init(repo):
+def init(repo: str = '.'):
     """
-    Function for the git init command. It creates a .git directory for repository and fills it with git related
-    directories and files.
+    The init function creates an empty git repository by creating a .git directory in the current or given directory.
+
+    Args:
+        repo (str): Name of repository name. If none is given, the current directory is used.
+    
+    Returns:
+        Boolean: Returns true if successful, false otherwise.
     """
     if os.path.exists(os.path.join(repo, '.git')):
         print(f"Repository {repo} exists already")
@@ -21,6 +26,7 @@ def init(repo):
         fullPath = cwd
 
     os.mkdir(os.path.join(repo, '.git'))
+
     # create necessary directories
     for name in ['objects', 'refs', 'refs/heads']:
         os.mkdir(os.path.join(repo, '.git', name))
