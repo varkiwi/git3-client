@@ -1,4 +1,6 @@
-import struct, os, hashlib
+import struct
+import os
+import hashlib
 
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
@@ -129,6 +131,8 @@ def write_index(entries):
                 entry.dev, entry.ino & 0xFFFFFFFF, entry.mode, entry.uid, entry.gid,
                 entry.size, entry.sha1, entry.flags)
         path = entry.path.encode()
+        # from ctime to object name it is 62 bytes
+        # this // is integer devison
         length = ((62 + len(path) + 8) // 8) * 8
         packed_entry = entry_head + path + b'\x00' * (length - 62 - len(path))
         packed_entries.append(packed_entry)
