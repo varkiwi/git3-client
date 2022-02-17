@@ -1,4 +1,6 @@
-import struct, os, hashlib
+import struct
+import os
+import hashlib
 
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
