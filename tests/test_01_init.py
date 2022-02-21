@@ -7,13 +7,20 @@ from git3Client.gitCommands.init import init
 
 class Test_Init():
     repo_name = 'test_repo'
+    indir_repo_name = 'indir_repo'
 
-    @pytest.fixture(scope='module',autouse=True)
+    @pytest.fixture(scope='module', autouse=True)
     def run_before_and_after_tests(self):
+        start_path = os.path.abspath(os.getcwd())
+        
+        # execute tests
         yield
+
+        os.chdir(start_path)
 
         try:
             shutil.rmtree(self.repo_name)
+            shutil.rmtree(self.indir_repo_name)
         except OSError as e:
             print("Error: %s : %s" % (self.repo_name, e.strerror))
 
@@ -37,3 +44,14 @@ class Test_Init():
     def test_create_another_repo(self):
         result = init(self.repo_name)
         assert result is False
+
+    def test_create_repo_in_dir(self):
+        os.mkdir(self.indir_repo_name)
+        os.chdir(self.indir_repo_name)
+        result = init()
+        assert result is True
+
+    def test_create_repo_in_existing_repo(self):
+        result = init()
+        assert result is False
+        
