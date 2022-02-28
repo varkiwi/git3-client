@@ -107,6 +107,10 @@ To deactivate the virtual environment, just type `deactivate`
 
 Install git3 in virtual environment: `python setup.py install`
 
+Coverage: `coverage run -m pytest`
+
+Test: `pytest`
+
 ## How to push to PyPi
 
 In the active virtual env, execute the following: `python setup.py sdist bdist_wheel`
