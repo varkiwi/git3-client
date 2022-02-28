@@ -109,7 +109,9 @@ Install git3 in virtual environment: `python setup.py install`
 
 Coverage: `coverage run -m pytest`
 
-Test: `pytest`
+Read coverage report: `coverage report -m`
+
+Test: `pytest -s`
 
 ## How to push to PyPi
 

@@ -3,7 +3,6 @@ import operator
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE
 from git3Client.gitInternals.gitIndex import read_index, write_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.IndexEntry import IndexEntry
