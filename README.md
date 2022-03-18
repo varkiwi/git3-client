@@ -95,6 +95,8 @@ Repository name: `firstMainNetRepo`
 # Local development
 
 ## Create local environment
+
+### Ubuntu
 I used `virtualenv` to create a virtual environment: `virtualenv --python path/to/python/3.8 [name]`
 
 Activate the virtual environment: `source [name]/bin/activate`
@@ -105,7 +107,19 @@ Install the git3 client in the virtual environment: `python setup.py install`
 
 To deactivate the virtual environment, just type `deactivate`
 
-Install git3 in virtual environment: `python setup.py install`
+### MacOS Monterey V12.2
+
+Here an alternative, which worked for me:
+
+I used `virtualenv` to create a virtual environment: `python3 -m virtualenv --python path/to/python/3.8 [name]`
+
+Activate the virtual environment: `source [name]/bin/activate`
+
+Install requirements: `arch -x86_64 pip install -r requirements.txt `
+
+Install the git3 client in the virtual environment: `python setup.py install`
+
+To deactivate the virtual environment, just type `deactivate`
 
 ## How to push to PyPi
 

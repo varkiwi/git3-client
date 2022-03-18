@@ -55,7 +55,6 @@ setup(
         'typing-extensions==3.7.4.3',
         'urllib3==1.25.11',
         'varint==1.0.2',
-        #'web3==5.12.3',
         'web3==5.23.1',
         'websockets==9.1',
         'zipp==3.3.1',
