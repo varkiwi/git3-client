@@ -13,6 +13,16 @@ setup(
             "git3 = git3Client.__main__:run",
         ]
     },
+    data_files=[
+        ('contractAbi', [
+            'git3Client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
+            'git3Client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
+            'git3Client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json',
+            'git3Client/artifacts/contracts/facets/GitTips.sol/GitTips.json',
+            'git3Client/artifacts/contracts/GitFactory.sol/GitFactory.json',
+            'git3Client/artifacts/contracts/GitRepository.sol/GitRepository.json',
+            ])
+    ],
     version = "0.2.1",
     description = "Git3 Python client",
     long_description = content,
@@ -49,7 +59,7 @@ setup(
         'pyrsistent==0.17.3',
         'requests==2.24.0',
         'rlp==2.0.0',
-        'rusty-rlp==0.1.15',
+        #'rusty-rlp==0.1.15',
         'six==1.15.0',
         'toolz==0.11.1',
         'typing-extensions==3.7.4.3',
