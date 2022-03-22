@@ -1,7 +1,7 @@
 import os, requests, zlib, sys, shutil
 
 from pathlib import Path
-from Crypto.PublicKey import ECC
+from cryptography.hazmat.primitives import serialization
 
 from git3Client.exceptions import NoRepositoryError
 
@@ -63,27 +63,18 @@ def get_private_key():
     if identity_file_path == None:
         print('No identity file provided. Please provide an identity file on your config file')
         sys.exit(1)
+
     try:
-        content = read_file(os.path.expanduser(identity_file_path))
+        pem_content = read_file(os.path.expanduser(identity_file_path))
     except FileNotFoundError as fnfe:
         print(fnfe)
         sys.exit(1)
 
-    password = ''
-    try:
-        key = ECC.import_key(content)
-    except ValueError as ve:
-        if str(ve) == 'PEM is encrypted, but no passphrase available':
-            password = input('Password to decrypt PEM file is required: ')
-        else:
-            print('Unable to load private key')
-            sys.exit(1)
-    try:
-        key = ECC.import_key(content, password)
-    except ValueError as ve:
-        print('Unable to decrypt PEM file. Password is incorrect')
-        sys.exit(1)
-    return hex(key.d)[2:]
+    private_key = serialization.load_pem_private_key(
+        pem_content,
+        password=None
+    )
+    return hex(private_key.private_numbers().private_value)[2:]
 
 def get_current_gas_price():
     """
