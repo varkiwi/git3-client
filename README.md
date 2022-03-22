@@ -37,6 +37,11 @@ The `0x20` at position 6 says, that the following data is 32 bytes long and this
 
 Better tooling is still required :)
 
+### Import private key from MetaMask
+I believe this steps should work.
+
+https://rchain.atlassian.net/wiki/spaces/CORE/pages/426311681/Ethereum+private+public+keys+addresses+and+PEM+certificates
+
 ### Git config file
 The git3 client needs to know the author's name, email address and where to find the private key. Therefore you can use either the global `.gitconfig` file or a config file stored in the repository in the `.git` folder (`[repositoryName]/.git/config`). 
 
