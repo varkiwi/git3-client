@@ -1,5 +1,6 @@
 import binascii
 import os
+import time
 
 from git3Client.config.config import CHAINID
 
@@ -157,7 +158,7 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
     Returns:
         str: CID of the last push data
     """
-    client = getStorageClient()
+    # client = getStorageClient()
     entries = read_tree(tree_hash)
     tree_entries = []
 
@@ -188,7 +189,12 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
                 'content': blob.decode(),
                 'sha1': entry[2]
             }
-            cid = client.add_json(blob_to_push)
+            cid = push_data_to_storage(blob_to_push)
+            # try:
+            #     cid = client.add_json(blob_to_push)
+            # except:
+            #     print("An error occured while pushing the blob")
+            #     sys.exit(1)
 
             # if 'cid' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
             #     subdirFiles[entry[1]]['cid'] = cid
@@ -216,8 +222,12 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
         'name': folder_name,
         'sha1': tree_hash
     }
-
-    cid = client.add_json(tree_to_push)
+    cid = push_data_to_storage(tree_to_push)
+    # try:
+    #     cid = client.add_json(tree_to_push)
+    # except:
+    #     print("An error occured while pushing the blob")
+    #     sys.exit(1)
     return cid
 
 def push_commit(commit_hash, remote_commit_hash, remote_commit_cid, remote_database):
@@ -274,6 +284,21 @@ def push_commit(commit_hash, remote_commit_hash, remote_commit_cid, remote_datab
         parent_cid = push_commit(parent, remote_commit_hash, remote_commit_cid, remote_database)
         commit_to_push['parents'].append(parent_cid)
 
-    client = getStorageClient()
-    commit_cid = client.add_json(commit_to_push)
+    # client = getStorageClient()
+    # commit_cid = client.add_json(commit_to_push)
+    commit_cid = push_data_to_storage(commit_to_push)
     return commit_cid
+
+
+def push_data_to_storage(data):
+    client = getStorageClient()
+    time_to_sleep = 12
+    while True:
+        try:
+            cid = client.add_json(data)
+            break
+        except:
+            time.sleep(time_to_sleep)
+            time_to_sleep += 2
+            print(f'Due to too many requests, we will have to wait for {time_to_sleep} seconds')
+    return cid
