@@ -2,7 +2,7 @@ import binascii
 import os
 import time
 
-from git3Client.config.config import CHAINID
+from git3Client.config.config import MUMBAI_CHAINID
 
 from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
 from git3Client.dlt.provider import get_web3_provider
@@ -49,7 +49,7 @@ def push_new_cid(branchName, cid):
     gas_price = get_current_gas_price()
 
     create_push_tx = branch_contract.functions.push(branchName, cid).buildTransaction({
-        'chainId': CHAINID,
+        'chainId': MUMBAI_CHAINID,
         'gas': 746427,
         'gasPrice': w3.toWei(gas_price, 'gwei'),
         'nonce': nonce,

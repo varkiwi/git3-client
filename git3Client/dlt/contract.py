@@ -1,6 +1,6 @@
 from .provider import get_web3_provider
 
-from git3Client.config.config import GIT_FACTORY_ADDRESS
+from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS
 
 import json
 import os
@@ -34,7 +34,7 @@ def get_factory_contract():
     """
     w3 = get_web3_provider()
     abi = read_contract_abi("GitFactory")
-    return w3.eth.contract(address=GIT_FACTORY_ADDRESS, abi=abi)
+    return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
 
 def get_repository_contract(address):
     """
