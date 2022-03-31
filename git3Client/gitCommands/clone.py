@@ -1,6 +1,6 @@
 import binascii, os
 
-from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.repository import get_all_remote_commits
 
 from git3Client.gitCommands.init import init
@@ -16,9 +16,15 @@ def clone(repo_name):
 
     repo_name: Repository to be cloned
     """
-    user_address, repo_name = repo_name.split('/')
 
-    git_factory = get_factory_contract()
+    user_address, repo_name = repo_name.split('/')
+    network, user_address = user_address.split(':')
+
+    if network != 'mumbai' and network != 'godwoken':
+        print(f"Network {network} not supported")
+        return
+    
+    git_factory = get_factory_contract(network)
     user_key = git_factory.functions.getUserRepoNameHash(user_address, repo_name).call()
     user_key = '0x{}'.format(binascii.hexlify(user_key).decode())
 
@@ -29,7 +35,7 @@ def clone(repo_name):
         return
     git_repo_address = repository[2]
     
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address, network)
     
     branches = branch_contract.functions.getBranchNames().call()
 
@@ -82,7 +88,7 @@ def clone(repo_name):
     # write packed-refs
     write_file('.git/packed-refs', packed_refs_content, binary='')
 
-    write_file('.git/name', str.encode('location: ' + user_key))
+    write_file('.git/name', str.encode(f"location: {network}:{user_key}"))
     # collecting all files from the repo in order to create the index file
     files_to_add = []
     for path, subdirs, files in os.walk('.'):

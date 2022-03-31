@@ -4,6 +4,7 @@ from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS, GODWOKEN_TESTNE
 
 import json
 import os
+import sys
 
 def read_contract_abi(contractName):
     """
@@ -38,17 +39,11 @@ def get_factory_contract(network):
     abi = read_contract_abi("GitFactory")
     if network == 'mumbai':
         return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
-    return w3.eth.contract(address=GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS, abi=abi)
-
-def get_repository_contract(address):
-    """
-    Returns a GitRepository Web3 Contract object
-
-    returns: Web3 Contract object for GitRepository
-    """
-    w3 = get_web3_provider()
-    abi = read_contract_abi("GitRepository")
-    return w3.eth.contract(address=address, abi=abi)
+    elif network == 'godwoken':
+        return w3.eth.contract(address=GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS, abi=abi)
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
 
 def get_facet_contract(contractName, address, network):
     """

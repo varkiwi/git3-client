@@ -82,12 +82,20 @@ def get_current_gas_price(network):
     print('Getting current gas price')
     if network == 'mumbai':
         return requests.get(MUMBAI_GAS_STATION).json()['fast']
-    return 0
+    elif network == 'godwoken':
+        return 0
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
 
 def get_chain_id(network):
     if network == 'mumbai':
         return MUMBAI_CHAINID
-    return GODWOKEN_TESTNET_CHAINID
+    elif network == 'godwoken':
+        return GODWOKEN_TESTNET_CHAINID
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
 
 def read_repo_name():
     """Read the repoName file and return the name"""

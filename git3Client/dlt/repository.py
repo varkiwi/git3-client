@@ -4,7 +4,7 @@ import time
 
 from git3Client.config.config import MUMBAI_CHAINID
 
-from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.provider import get_web3_provider
 from git3Client.dlt.user import get_user_dlt_address
 from git3Client.dlt.storageClient import getStorageClient
@@ -14,18 +14,6 @@ from git3Client.gitInternals.gitTree import read_tree
 from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
 from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path, get_chain_id
-
-# def get_remote_cid_history():
-#     """
-#     Gets the full cid history of the repository and returns a list
-#     #TODO: Returns list?
-#     """
-#     git_factory = get_factory_contract()
-#     repo_name = read_repo_name()
-#     git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
-#     repo_contract = get_repository_contract(git_repo_address)
-#     return repo_contract.functions.getCidHistory().call()
-
 
 def push_new_cid(branchName, cid):
     repo_name = read_repo_name()
