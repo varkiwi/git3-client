@@ -50,15 +50,16 @@ def get_repository_contract(address):
     abi = read_contract_abi("GitRepository")
     return w3.eth.contract(address=address, abi=abi)
 
-def get_facet_contract(contractName, address):
+def get_facet_contract(contractName, address, network):
     """
     Returns an ABI for a Smart Contract based on the given parameter
 
     parameter: contractName - of the Smart Contract the ABI is read for
     parameter: address - address of the smart contract
+    parameter: network - the network for which the contract should be loaded
 
     returns: Web3 Contract object for Smart Contract based on the given parameter
     """
-    w3 = get_web3_provider()
+    w3 = get_web3_provider(network)
     abi = read_contract_abi(contractName)
     return w3.eth.contract(address=address, abi=abi)
