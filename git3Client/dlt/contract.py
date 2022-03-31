@@ -1,9 +1,10 @@
 from .provider import get_web3_provider
 
-from git3Client.config.config import GIT_FACTORY_ADDRESS
+from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS, GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS
 
 import json
 import os
+import sys
 
 def read_contract_abi(contractName):
     """
@@ -26,35 +27,34 @@ def read_contract_abi(contractName):
         data = json.load(f)
     return data['abi']
 
-def get_factory_contract():
+def get_factory_contract(network):
     """
     Returns a GitFactory Web3 Contract object
 
+    network: the network for which the contract should be loaded
+
     returns: Web3 Contract object for GitFactory
     """
-    w3 = get_web3_provider()
+    w3 = get_web3_provider(network)
     abi = read_contract_abi("GitFactory")
-    return w3.eth.contract(address=GIT_FACTORY_ADDRESS, abi=abi)
+    if network == 'mumbai':
+        return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
+    elif network == 'godwoken':
+        return w3.eth.contract(address=GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS, abi=abi)
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
 
-def get_repository_contract(address):
-    """
-    Returns a GitRepository Web3 Contract object
-
-    returns: Web3 Contract object for GitRepository
-    """
-    w3 = get_web3_provider()
-    abi = read_contract_abi("GitRepository")
-    return w3.eth.contract(address=address, abi=abi)
-
-def get_facet_contract(contractName, address):
+def get_facet_contract(contractName, address, network):
     """
     Returns an ABI for a Smart Contract based on the given parameter
 
     parameter: contractName - of the Smart Contract the ABI is read for
     parameter: address - address of the smart contract
+    parameter: network - the network for which the contract should be loaded
 
     returns: Web3 Contract object for Smart Contract based on the given parameter
     """
-    w3 = get_web3_provider()
+    w3 = get_web3_provider(network)
     abi = read_contract_abi(contractName)
     return w3.eth.contract(address=address, abi=abi)

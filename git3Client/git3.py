@@ -73,6 +73,10 @@ def main():
     # Create
     sub_parser = sub_parsers.add_parser('create',
             help='create your remote repository')
+    valid_networks = ['godwoken', 'mumbai']
+    sub_parser.add_argument('-n', '--network', required=True, choices=valid_networks,
+            help='Choose which network to interact with. Godwoken Testnet and'
+                 ' Mumbai are currently supported.')
     
     # Clone
     sub_parser = sub_parsers.add_parser('clone',
@@ -174,7 +178,7 @@ def main():
     elif args.command == 'commit':
         commit(args.message, author=args.author)
     elif args.command == 'create':
-        create()
+        create(args.network)
     elif args.command == 'clone':
         clone(args.name)
     elif args.command == 'diff':

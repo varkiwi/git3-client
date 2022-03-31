@@ -20,15 +20,16 @@ def pull():
     if len(changed) > 0 or not is_stage_empty():
         print("You have local changes. Add and commit those first")
         return
-    
+
     repo_name = read_repo_name()
     if not repo_name.startswith('location:'):
-        # Need to check if the return is handled by the calling function
         print('.git/name file has an error. Exiting...')
         return False
-    user_key = repo_name.split('location:')[1].strip()
+    tmp = repo_name.split('location:')[1].split(':')
+    network = tmp[0].strip()
+    user_key = tmp[1].strip()
     
-    git_factory = get_factory_contract()
+    git_factory = get_factory_contract(network)
     repository = git_factory.functions.getRepository(user_key).call()
     
     if not repository[0]:
@@ -38,7 +39,7 @@ def pull():
 
     activeBranch = get_current_branch_name()
 
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address, network)
 
     branch = branch_contract.functions.getBranch(activeBranch).call()
     headCid = branch[1]
@@ -66,7 +67,6 @@ def pull():
         print('Nothing to pull')
         return
     elif len(local_to_remote_difference) == 0:
-        print('We can download and unpack all of the following set :)')
         # alright, we filtered what needs to be downloaded and unpacked
         # check clone on how to do that!
         remote_commits = list(filter(lambda x: x['sha1'] in remote_to_local_difference, remote_commits))

@@ -11,16 +11,18 @@ def fetch(branchName):
     """
     Downloads commits and objects from the remote repository
     """
-    git_factory = get_factory_contract()
     repo_name = read_repo_name()
-    active_branch = get_current_branch_name()
     if not repo_name.startswith('location:'):
         # Need to check if the return is handled by the calling function
         print('.git/name file has an error. Exiting...')
         return False
+    tmp = repo_name.split('location:')[1].split(':')
+    network = tmp[0].strip()
+    user_key = tmp[1].strip()
 
-    user_key = repo_name.split('location:')[1].strip()
-    
+    git_factory = get_factory_contract(network)
+    active_branch = get_current_branch_name()
+
     repository = git_factory.functions.getRepository(user_key).call()
 
     if not repository[0]:
@@ -29,7 +31,7 @@ def fetch(branchName):
 
     git_repo_address = repository[2]
     
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address, network)
 
     # fetch_data will contain tuples in the following format
     # (branch_name, head_cid, head_commit_sha1 of branch)
