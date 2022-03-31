@@ -1,6 +1,6 @@
 from .provider import get_web3_provider
 
-from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS
+from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS, GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS
 
 import json
 import os
@@ -26,15 +26,19 @@ def read_contract_abi(contractName):
         data = json.load(f)
     return data['abi']
 
-def get_factory_contract():
+def get_factory_contract(network):
     """
     Returns a GitFactory Web3 Contract object
 
+    network: the network for which the contract should be loaded
+
     returns: Web3 Contract object for GitFactory
     """
-    w3 = get_web3_provider()
+    w3 = get_web3_provider(network)
     abi = read_contract_abi("GitFactory")
-    return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
+    if network == 'mumbai':
+        return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
+    return w3.eth.contract(address=GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS, abi=abi)
 
 def get_repository_contract(address):
     """
