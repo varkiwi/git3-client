@@ -11,7 +11,8 @@ from git3Client.gitCommands.init import init
 from git3Client.gitCommands.add import add
 
 class Test_Add():
-    OBJECTS_DIR_PATH = os.path.join('.git', 'objects')
+    GIT_FOLDER = '.git'
+    OBJECTS_DIR_PATH = os.path.join(GIT_FOLDER, 'objects')
     repo_name = 'test_repo'
     dir_name = 'test_dir'
     file_names_and_content = [
@@ -34,7 +35,7 @@ class Test_Add():
         yield
         os.chdir(current_path)
 
-    @pytest.fixture
+    @pytest.fixture(scope='function')
     def empty_objects_dir(self):
         yield
         
@@ -43,6 +44,11 @@ class Test_Add():
                 path.unlink()
             elif path.is_dir():
                 shutil.rmtree(path)
+
+    @pytest.fixture
+    def delete_index_file(self):
+        yield
+        os.remove(os.path.join(self.GIT_FOLDER, 'index'))
         
 
     @pytest.fixture(scope='module', autouse=True)
@@ -68,7 +74,7 @@ class Test_Add():
             print("Error: %s : %s" % (self.repo_name, e.strerror))
     
     
-    def test_add_single_file(self, empty_objects_dir):
+    def test_add_single_file(self, empty_objects_dir, delete_index_file):
         assert os.listdir(self.OBJECTS_DIR_PATH) == []
 
         add([self.file_names_and_content[0][0]])
@@ -76,7 +82,7 @@ class Test_Add():
         assert os.listdir(self.OBJECTS_DIR_PATH) == [self.file_hashes[0][:2]]
         assert os.listdir(os.path.join(self.OBJECTS_DIR_PATH, self.file_hashes[0][:2])) == [self.file_hashes[0][2:]]
 
-    def test_add_fileand_file_in_dir(self, empty_objects_dir):
+    def test_add_fileand_file_in_dir(self, empty_objects_dir, delete_index_file):
         assert os.listdir(self.OBJECTS_DIR_PATH) == []
 
         add([self.file_names_and_content[1][0], self.file_names_and_content[2][0]])
