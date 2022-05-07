@@ -111,7 +111,7 @@ Coverage: `coverage run -m pytest`
 
 Read coverage report: `coverage report -m`
 
-Test: `pytest -s`
+Test: `python -m pytest -s`
 
 ## How to push to PyPi
 
