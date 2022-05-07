@@ -3,7 +3,7 @@ import os, requests, zlib, sys, shutil
 from pathlib import Path
 from Crypto.PublicKey import ECC
 
-from git3Client.exceptions import NoRepositoryError
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
 MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
 
@@ -17,7 +17,8 @@ def get_repo_root_path():
     if contains_git_folder:
         return str(path_to_test)
     parent = 0
-    while not contains_git_folder and str(path_to_test.parents[parent]) != '/':
+
+    while not contains_git_folder and len(path_to_test.parents) != 0 and str(path_to_test.parents[parent]) != '/':
         contains_git_folder = os.path.isdir(str(path_to_test.parents[parent]) + '/.git')
         if contains_git_folder:
             break
