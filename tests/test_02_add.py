@@ -13,6 +13,7 @@ from git3Client.gitCommands.add import add
 class Test_Add():
     GIT_FOLDER = '.git'
     OBJECTS_DIR_PATH = os.path.join(GIT_FOLDER, 'objects')
+    INDEX_PATH = os.path.join(GIT_FOLDER, 'index')
     repo_name = 'test_repo'
     dir_name = 'test_dir'
     file_names_and_content = [
@@ -96,7 +97,6 @@ class Test_Add():
             add(self.file_names_and_content)
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
-        #TODO: check index file
 
     def test_adding_non_existing_file(self, empty_objects_dir):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
