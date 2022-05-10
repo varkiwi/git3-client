@@ -97,7 +97,7 @@ def read_index() -> List[IndexEntry]:
         List of IndexEntry objects. If no index file is found, an empty list is returned.
 
     Raises:
-        NoRepositoryError: If not git repository is found.
+        NoRepositoryError: If no git repository is found.
     """
     try:
         repo_root_path = get_repo_root_path()
