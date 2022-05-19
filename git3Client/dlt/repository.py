@@ -1,9 +1,10 @@
 import binascii
 import os
+import time
 
-from git3Client.config.config import CHAINID
+from git3Client.config.config import MUMBAI_CHAINID
 
-from git3Client.dlt.contract import get_factory_contract, get_repository_contract, get_facet_contract
+from git3Client.dlt.contract import get_factory_contract, get_facet_contract
 from git3Client.dlt.provider import get_web3_provider
 from git3Client.dlt.user import get_user_dlt_address
 from git3Client.dlt.storageClient import getStorageClient
@@ -12,43 +13,33 @@ from git3Client.gitInternals.gitObject import read_object
 from git3Client.gitInternals.gitTree import read_tree
 from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
-from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path
-
-def get_remote_cid_history():
-    """
-    Gets the full cid history of the repository and returns a list
-    #TODO: Returns list?
-    """
-    git_factory = get_factory_contract()
-    repo_name = read_repo_name()
-    git_repo_address = git_factory.functions.gitRepositories(repo_name).call()
-    repo_contract = get_repository_contract(git_repo_address)
-    return repo_contract.functions.getCidHistory().call()
-
+from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path, get_chain_id
 
 def push_new_cid(branchName, cid):
-    git_factory = get_factory_contract()
     repo_name = read_repo_name()
     if not repo_name.startswith('location:'):
-        # Need to check if the return is handled by the calling function
         print('.git/name file has an error. Exiting...')
         return False
-    user_key = repo_name.split('location:')[1].strip()
+    tmp = repo_name.split('location:')[1].split(':')
+    network = tmp[0].strip()
+    user_key = tmp[1].strip()
+
+    git_factory = get_factory_contract(network)
     user_address = get_user_dlt_address()
 
     repository = git_factory.functions.getRepository(user_key).call()
 
     git_repo_address = repository[2]
 
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
-    w3 = get_web3_provider()
+    branch_contract = get_facet_contract("GitBranch", git_repo_address, network)
+    w3 = get_web3_provider(network)
 
-    nonce = w3.eth.getTransactionCount(user_address)
+    nonce = w3.eth.get_transaction_count(user_address)
 
-    gas_price = get_current_gas_price()
+    gas_price = get_current_gas_price(network)
 
     create_push_tx = branch_contract.functions.push(branchName, cid).buildTransaction({
-        'chainId': CHAINID,
+        'chainId': get_chain_id(network),
         'gas': 746427,
         'gasPrice': w3.toWei(gas_price, 'gwei'),
         'nonce': nonce,
@@ -109,15 +100,17 @@ def check_if_repo_created():
     repo_name = read_repo_name()
     if not repo_name.startswith('location:'):
         return False
-    user_key = repo_name.split('location:')[1].strip()
+    tmp = repo_name.split('location:')[1].split(':')
+    network = tmp[0].strip()
+    user_key = tmp[1].strip()
 
-    w3 = get_web3_provider()
+    w3 = get_web3_provider(network)
     if not w3.isConnected():
         #TODO: Throw an exception
         print('No connection. Establish a connection first')
         return False
 
-    git_factory = get_factory_contract()
+    git_factory = get_factory_contract(network)
 
     return git_factory.functions.getRepository(user_key).call()[0]
 
@@ -125,11 +118,14 @@ def get_remote_branch_hash(branchName):
     """
     Get commit hash of remote branch branchName, return CID or None if no remote commits.
     """
-    git_factory = get_factory_contract()
     repo_name = read_repo_name()
     if not repo_name.startswith('location:'):
         return
-    user_key = repo_name.split('location:')[1].strip()
+    tmp = repo_name.split('location:')[1].split(':')
+    network = tmp[0].strip()
+    user_key = tmp[1].strip()
+
+    git_factory = get_factory_contract(network)
     
     repository = git_factory.functions.getRepository(user_key).call()
     
@@ -137,7 +133,7 @@ def get_remote_branch_hash(branchName):
         print('No such repository')
         return
     git_repo_address = repository[2]
-    branch_contract = get_facet_contract("GitBranch", git_repo_address)
+    branch_contract = get_facet_contract("GitBranch", git_repo_address, network)
 
     branch = branch_contract.functions.getBranch(branchName).call()
     
@@ -157,7 +153,7 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
     Returns:
         str: CID of the last push data
     """
-    client = getStorageClient()
+    # client = getStorageClient()
     entries = read_tree(tree_hash)
     tree_entries = []
 
@@ -188,10 +184,8 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
                 'content': blob.decode(),
                 'sha1': entry[2]
             }
-            cid = client.add_json(blob_to_push)
+            cid = push_data_to_storage(blob_to_push)
 
-            # if 'cid' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
-            #     subdirFiles[entry[1]]['cid'] = cid
             print('Pushing {} to IPFS'.format(entry[1]))
         elif entry[0] == GIT_TREE_MODE:
             remote_database['path'].append(entry[1])
@@ -216,8 +210,7 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
         'name': folder_name,
         'sha1': tree_hash
     }
-
-    cid = client.add_json(tree_to_push)
+    cid = push_data_to_storage(tree_to_push)
     return cid
 
 def push_commit(commit_hash, remote_commit_hash, remote_commit_cid, remote_database):
@@ -274,6 +267,19 @@ def push_commit(commit_hash, remote_commit_hash, remote_commit_cid, remote_datab
         parent_cid = push_commit(parent, remote_commit_hash, remote_commit_cid, remote_database)
         commit_to_push['parents'].append(parent_cid)
 
-    client = getStorageClient()
-    commit_cid = client.add_json(commit_to_push)
+    commit_cid = push_data_to_storage(commit_to_push)
     return commit_cid
+
+
+def push_data_to_storage(data):
+    client = getStorageClient()
+    time_to_sleep = 12
+    while True:
+        try:
+            cid = client.add_json(data)
+            break
+        except:
+            time.sleep(time_to_sleep)
+            time_to_sleep += 2
+            print(f'Due to too many requests, we will have to wait for {time_to_sleep} seconds')
+    return cid

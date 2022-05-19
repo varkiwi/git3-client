@@ -176,8 +176,10 @@ def merge(source_branch):
                         # Need to check if the return is handled by the calling function
                         print('.git/name file has an error. Exiting...')
                         return False
-                    user_key = repo_name.split('location:')[1].strip()
-                    git_factory = get_factory_contract()
+                    tmp = repo_name.split('location:')[1].split(':')
+                    network = tmp[0].strip()
+                    user_key = tmp[1].strip()
+                    git_factory = get_factory_contract(network)
 
                     repository = git_factory.functions.getRepository(user_key).call()
                     write_file(

@@ -1,11 +1,11 @@
 import os, requests, zlib, sys, shutil
 
 from pathlib import Path
-from Crypto.PublicKey import ECC
+from cryptography.hazmat.primitives import serialization
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-
-MUMBAI_GAS_STATION='https://gasstation-mumbai.matic.today'
+from git3Client.exceptions import NoRepositoryError
+from git3Client.config.config import MUMBAI_GAS_STATION, MUMBAI_CHAINID, GODWOKEN_TESTNET_CHAINID
 
 def get_repo_root_path() -> str:
     """
@@ -84,34 +84,40 @@ def get_private_key():
     if identity_file_path == None:
         print('No identity file provided. Please provide an identity file on your config file')
         sys.exit(1)
+
     try:
-        content = read_file(os.path.expanduser(identity_file_path))
+        pem_content = read_file(os.path.expanduser(identity_file_path))
     except FileNotFoundError as fnfe:
         print(fnfe)
         sys.exit(1)
 
-    password = ''
-    try:
-        key = ECC.import_key(content)
-    except ValueError as ve:
-        if str(ve) == 'PEM is encrypted, but no passphrase available':
-            password = input('Password to decrypt PEM file is required: ')
-        else:
-            print('Unable to load private key')
-            sys.exit(1)
-    try:
-        key = ECC.import_key(content, password)
-    except ValueError as ve:
-        print('Unable to decrypt PEM file. Password is incorrect')
-        sys.exit(1)
-    return hex(key.d)[2:]
+    private_key = serialization.load_pem_private_key(
+        pem_content,
+        password=None
+    )
+    return hex(private_key.private_numbers().private_value)[2:]
 
-def get_current_gas_price():
+def get_current_gas_price(network):
     """
     Gets the current standard gas price for the network
     """
     print('Getting current gas price')
-    return requests.get(MUMBAI_GAS_STATION).json()['standard']
+    if network == 'mumbai':
+        return requests.get(MUMBAI_GAS_STATION).json()['fast']
+    elif network == 'godwoken':
+        return 0
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
+
+def get_chain_id(network):
+    if network == 'mumbai':
+        return MUMBAI_CHAINID
+    elif network == 'godwoken':
+        return GODWOKEN_TESTNET_CHAINID
+    else:
+        print(f"Network {network} not supported")
+        sys.exit(1)
 
 def read_repo_name():
     """Read the repoName file and return the name"""

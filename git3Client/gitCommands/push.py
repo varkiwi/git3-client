@@ -9,12 +9,12 @@ def push():
     if not check_if_repo_created():
         print('Repository has not been registered yet. Use\n\n`git3 create`\n\nbefore you push')
         return
-
+    
     active_branch_name = get_current_branch_name()
 
     local_sha1 = get_active_branch_hash()
     remote_database_cid = get_remote_branch_hash(active_branch_name)
-
+    
     client = getStorageClient()
     # if remote_cid is none, nothing has been pushed yet.
     if remote_database_cid != None:
@@ -32,7 +32,7 @@ def push():
         }
 
     remote_database['path'] = ['files']
-
+    
     if local_sha1 == remote_sha1:
        print('Everything up-to-date')
        return
@@ -50,6 +50,21 @@ def push():
         del remote_database['path']
         del remote_database['committer']
         del remote_database['currentCommitMessage']
-        branch_cid = client.add_json(remote_database)
+        branch_cid = push_data_to_storage(remote_database)
+        # branch_cid = client.add_json(remote_database)
         print('Going to write the CID into repository contract')
         push_new_cid(active_branch_name, branch_cid)
+
+def push_data_to_storage(data):
+    """This function also exists in git3Client.dlt.repository!!"""
+    client = getStorageClient()
+    time_to_sleep = 12
+    while True:
+        try:
+            cid = client.add_json(data)
+            break
+        except:
+            time.sleep(time_to_sleep)
+            time_to_sleep += 2
+            print(f'Due to too many requests, we will have to wait for {time_to_sleep} seconds')
+    return cid
