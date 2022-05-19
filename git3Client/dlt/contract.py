@@ -26,11 +26,12 @@ def read_contract_abi(contractName):
         data = json.load(f)
     return data['abi']
 
-def get_factory_contract():
+def get_factory_contract() -> Contract:
     """
     Returns a GitFactory Web3 Contract object
 
-    returns: Web3 Contract object for GitFactory
+    Returns:
+        A Web3 Contract object representing the GitFactory contract
     """
     w3 = get_web3_provider()
     abi = read_contract_abi("GitFactory")

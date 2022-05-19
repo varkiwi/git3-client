@@ -8,10 +8,6 @@ from git3Client.dlt.user import get_user_dlt_address
 
 from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, write_file
 
-# CHAINID=80001
-# this is matic mainnet
-# CHAINID=137
-
 def create():
     git_factory = get_factory_contract()
     repo_name = read_repo_name()
