@@ -5,8 +5,6 @@ import random
 
 from pathlib import Path
 
-from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-
 from git3Client.gitCommands.init import init
 from git3Client.gitCommands.add import add
 
