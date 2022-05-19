@@ -36,9 +36,21 @@ def find_object(sha1_prefix):
                 len(objects), sha1_prefix))
     return os.path.join(obj_dir, objects[0])
 
-def hash_object(data, obj_type, write=True):
-    """Compute hash of object data of given type and write to object store if
+def hash_object(data: bytes, obj_type: str, write: bool = True) -> str:
+    """
+    Compute hash of object data of given type and write to object store if
     "write" is True. Return SHA-1 object hash as hex string.
+
+    Parameters:
+        data (bytes): data to be hashed
+        obj_type (string): Type of object to be hashed
+        write (bool): Whether to write the result to file or not
+
+    Returns:
+        str: SHA-1 object hash as hex string
+
+    Raises:
+        NoRepositoryError: If no repository is found
     """
     try:
         repo_root_path = get_repo_root_path()
