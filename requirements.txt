@@ -1,2 +1,4 @@
 -e .
+coverage==6.3.2
+pytest==7.1.2
 

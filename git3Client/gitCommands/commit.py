@@ -1,40 +1,66 @@
 import os, time
 
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
+
 from git3Client.gitInternals.gitIndex import read_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.gitTree import write_tree
 
 from git3Client.utils.utils import get_active_branch_hash, get_repo_root_path, get_value_from_config_file, read_file, write_file, get_current_branch_name
 
-def commit(message, author=None, parent1=None, parent2=None):
-    """Commit the current state of the index to active branch with given message.
-    Return hash of commit object.
+def commit(message: str, author: str = None, parent1: str = None, parent2: str = None) -> str :
     """
-    index = read_index()
-    # we are working on write tree
-    tree =  hash_object(b''.join(write_tree(index)), 'tree') 
+    Commit the current state of the index to active branch with given message.
+    Returns the hash of the commit object.
+
+    Parameters:
+        message (str): The message for the commit.
+        author (str): The author of the commit.
+        parent1 (str): The first parent of the commit.
+        parent2 (str): The second parent of the commit.
+    
+    Returns:
+        Return hash of commit object.
+    """
+    try:
+        index = read_index()
+        # we are working on write tree
+        tree =  hash_object(b''.join(write_tree(index)), 'tree')
+    except NoRepositoryError as nre:
+        print(nre)
+        exit(1)
+ 
     if parent1 == None:
+        # even the get_active_branch_hash throws a NoRepositoryError
+        # we don't have to catch it, since we are doing it already further up in the code
+        # If there is no repository, we won't reach this code here anyways.
         parent = get_active_branch_hash()
     else:
         parent = parent1
 
     # check if there is a MERGE_HEAD file. If there is, parent2 is set to the sha1 hash
-    merge_head_path = os.path.join(get_repo_root_path(), '.git/MERGE_HEAD')
+    merge_head_path = os.path.join(get_repo_root_path(), '.git', 'MERGE_HEAD')
+
     if os.path.exists(merge_head_path):
         parent2 = read_file(merge_head_path).decode().strip()
 
     if author is None:
+        # get_value_from_config_file throws a NoRepositoryError
+        # but the same as above, we don't have to catch it
         user_name = get_value_from_config_file('name')
         user_email = get_value_from_config_file('email')
+            
         author = '{} <{}>'.format(user_name, user_email)
 
     timestamp = int(time.mktime(time.localtime()))
     utc_offset = -time.timezone
+
     author_time = '{} {}{:02}{:02}'.format(
             timestamp,
             '+' if utc_offset > 0 else '-',
             abs(utc_offset) // 3600,
             (abs(utc_offset) // 60) % 60)
+
     lines = ['tree ' + tree]
     if parent:
         lines.append('parent ' + parent)

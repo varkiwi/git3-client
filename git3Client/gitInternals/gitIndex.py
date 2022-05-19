@@ -2,6 +2,8 @@ import struct
 import os
 import hashlib
 
+from typing import List
+
 from .gitObject import hash_object
 from .IndexEntry import IndexEntry
 
@@ -87,8 +89,16 @@ def is_stage_empty():
             return False
     return True
 
-def read_index():
-    """Read git index file and return list of IndexEntry objects."""
+def read_index() -> List[IndexEntry]:
+    """
+    Read git index file and return list of IndexEntry objects.
+
+    Returns:
+        List of IndexEntry objects. If no index file is found, an empty list is returned.
+
+    Raises:
+        NoRepositoryError: If no git repository is found.
+    """
     try:
         repo_root_path = get_repo_root_path()
         data = read_file(os.path.join(repo_root_path, '.git', 'index'))

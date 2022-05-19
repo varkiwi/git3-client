@@ -126,6 +126,12 @@ Install the git3 client in the virtual environment: `python setup.py install`
 
 To deactivate the virtual environment, just type `deactivate`
 
+Coverage: `coverage run -m pytest`
+
+Read coverage report: `coverage report -m`
+
+Test: `python -m pytest -s`
+
 ## How to push to PyPi
 
 In the active virtual env, execute the following: `python setup.py sdist bdist_wheel`
