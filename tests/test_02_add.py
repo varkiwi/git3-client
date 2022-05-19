@@ -29,13 +29,6 @@ class Test_Add():
         '4ec55bf2dce0b83b4fabbdffb90f1165d32daacb',
     ]
 
-    @pytest.fixture
-    def move_to_root_and_back(self):
-        current_path = os.getcwd()
-        os.chdir('/')
-        yield
-        os.chdir(current_path)
-
     @pytest.fixture(scope='function')
     def empty_objects_dir(self):
         yield
