@@ -1,16 +1,17 @@
 import os
 import operator
 
+from typing import List
+
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
-from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE
 from git3Client.gitInternals.gitIndex import read_index, write_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.IndexEntry import IndexEntry
 
 from git3Client.utils.utils import get_repo_root_path, read_file
 
-def add(paths):
+def add(paths: List[str]) -> None:
     """
     Add all file paths to git index.
 
@@ -32,13 +33,9 @@ def add(paths):
     # transfer paths to relative paths. Relative to the repository root
     # in case we are in a subdirectory and add a file
     paths = list(map(lambda path: os.path.relpath(os.path.abspath(path), repo_root_path), paths))
-
-    try:
-        all_entries = read_index()
-    except NoRepositoryError as nre:
-        print(nre)
-        exit(1)
-
+    
+    all_entries = read_index()
+    
     entries = [e for e in all_entries if e.path not in paths]
     for path in paths:
         file_path = repo_root_path + '/' + path
@@ -46,7 +43,7 @@ def add(paths):
             data = read_file(file_path)
         except FileNotFoundError:
             print('fatal: pathspec \'{}\' did not match any files'.format(path))
-            return
+            exit(1)
         sha1 = hash_object(data, 'blob')
         st = os.stat(file_path)
         #TODO: We will need to check for the file mode properly!
