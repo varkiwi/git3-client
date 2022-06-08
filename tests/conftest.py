@@ -1,9 +1,97 @@
 import pytest
 import os
 import shutil
+import json
+
+from web3 import (
+    EthereumTesterProvider,
+    Web3,
+)
+
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives import serialization
 
 from git3Client.gitCommands.init import init
 from git3Client.gitCommands.add import add
+from git3Client.gitCommands.commit import commit
+
+REPO_FILES = ['Readme.md']
+PRIVATE_KEY = ec.generate_private_key(ec.SECP256K1())
+
+@pytest.fixture()
+def fund_user(w3):
+    to = w3.geth.personal.import_raw_key(hex(PRIVATE_KEY.private_numbers().private_value), '')
+    value = w3.toWei(1, 'ether')
+    txn = {
+        "from": w3.geth.personal.list_accounts()[0],
+        "to": to,
+        "value": value,
+        "gas": 21000,
+        "gasPrice": w3.eth.get_block('latest')["baseFeePerGas"] * 21000
+    }
+    txn_hash = w3.eth.send_transaction(txn)
+    w3.eth.wait_for_transaction_receipt(txn_hash)
+    return w3
+
+@pytest.fixture
+def deploy_contracts(eth_tester, fund_user):
+    w3 = fund_user
+    deploy_address = eth_tester.get_accounts()[0]
+    facets_contracts = ['GitBranch', 'GitIssues', 'GitRepositoryManagement', 'GitTips']
+    contract_information = []
+    for facet in facets_contracts:    
+        with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts', 'facets', f"{facet}.sol", f"{facet}.json")) as f:
+            contract_data = json.loads(f.read())
+
+        contract = w3.eth.contract(abi=contract_data['abi'], bytecode=contract_data['bytecode'])
+        function_signatures = []
+        for function in contract.all_functions():
+            function_signatures.append(Web3.toHex(Web3.sha3(text=str(function).split("Function")[1].replace(">", ""))[0:4]))
+            
+        tx_hash = contract.constructor().transact({'from': deploy_address})
+        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash, 180)
+        contract_information.append([tx_receipt.contractAddress, function_signatures])
+
+    # deplying GitContractRegistry
+    with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts', 'GitContractRegistry.sol', "GitContractRegistry.json")) as f:
+        contract_data = json.loads(f.read())
+    contract = w3.eth.contract(abi=contract_data['abi'], bytecode=contract_data['bytecode'])
+    tx_hash = contract.constructor(contract_information).transact({'from': deploy_address})
+    tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash, 180)
+
+    # deplying GitFactory
+    with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts','GitFactory.sol', 'GitFactory.json')) as f:
+        contract_data = json.loads(f.read())
+
+    git3_factory = w3.eth.contract(abi=contract_data['abi'], bytecode=contract_data['bytecode'][2:])
+    tx_hash = git3_factory.constructor(deploy_address).transact({'from': deploy_address})
+    tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash, 180)
+
+    return git3_factory(tx_receipt.contractAddress)
+
+@pytest.fixture
+def tester_provider():
+    return EthereumTesterProvider()
+
+@pytest.fixture
+def eth_tester(tester_provider):
+    return tester_provider.ethereum_tester
+
+@pytest.fixture
+def w3(tester_provider):
+    return Web3(tester_provider)
+
+@pytest.fixture
+def patch_web3_provider(mocker, w3):
+    mocker.patch('git3Client.gitCommands.create.get_web3_provider', return_value=w3)
+
+@pytest.fixture
+def patch_git_factory_for_create(mocker, deploy_contracts):
+    mocker.patch('git3Client.gitCommands.create.get_factory_contract', return_value=deploy_contracts)
+
+@pytest.fixture
+def tester_provider():
+    return EthereumTesterProvider()
 
 @pytest.fixture
 def move_to_root_and_back():
@@ -20,14 +108,35 @@ def create_file():
 
 @pytest.fixture
 def add_file_to_index():
-    add(['Readme.md'])
+    add(REPO_FILES)
     yield
 
 @pytest.fixture
-def create_local_config_file():
+def create_local_config_file_without_identity_file():
     config_content = "[user]\n\temail = test@test.com\n\tname = pytester"
     with open(os.path.join('.git', 'config'), 'w') as f:
         f.write(config_content)
+    yield
+
+@pytest.fixture
+def create_local_config_file_with_identity_file():
+    serialized_private = PRIVATE_KEY.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
+    with open(os.path.join('.git', 'identity'), 'wb') as f:
+        f.write(serialized_private)
+    
+    config_content = f"[user]\n\temail = test@test.com\n\tname = pytester\n\tIdentityFile = {os.path.join(os.path.abspath('.'), '.git', 'identity')}"
+    print(config_content)
+    with open(os.path.join('.git', 'config'), 'w') as f:
+        f.write(config_content)
+    yield
+
+@pytest.fixture
+def commit_to_repo():
+    commit(message="1st commit message")
     yield
 
 @pytest.fixture
@@ -47,3 +156,19 @@ def cleanup_repository(create_repository):
     print('Delete repo')
     os.chdir(start_path)
     shutil.rmtree(repo_name)
+
+# def pytest_configure(config):
+#     w3 = Web3(EthereumTesterProvider())
+#     to = w3.geth.personal.import_raw_key(hex(PRIVATE_KEY.private_numbers().private_value), '')
+#     value = w3.toWei(1, 'ether')
+#     txn = {
+#         "from": pytest.w3.geth.personal.list_accounts()[0],
+#         "to": to,
+#         "value": value,
+#         "gas": 21000,
+#         "gasPrice": w3.eth.get_block('latest')["baseFeePerGas"] * 21000
+#     }
+#     txn_hash = w3.eth.sendTransaction(txn)
+#     w3.eth.wait_for_transaction_receipt(txn_hash)
+
+    

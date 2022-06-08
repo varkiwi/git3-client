@@ -1,4 +1,6 @@
-import binascii, os
+import binascii, os, sys
+
+from eth_utils import ValidationError
 
 from git3Client.config.config import MUMBAI_CHAINID
 
@@ -21,7 +23,7 @@ def create(network):
     if repo_name == '':
         print('There is no repository name.')
         return
-    # #TODO: before creating tx and so on, check if this kind of repo exits already :)
+    #TODO: before creating tx and so on, check if this kind of repo exits already :)
     user_address = get_user_dlt_address()
     
     nonce = w3.eth.get_transaction_count(user_address)
@@ -42,11 +44,15 @@ def create(network):
     signed_txn = w3.eth.account.sign_transaction(create_repo_tx, private_key=priv_key)
 
     print('Sending transaction')
-    tx_hash = w3.eth.sendRawTransaction(signed_txn.rawTransaction)
+    try:
+        tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+    except ValidationError as e:
+        print(e)
+        sys.exit(1)
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
     # #TODO: print a clickable link to blockexplorer
-    print('Transaction hash {}'.format(binascii.hexlify(receipt['transactionHash']).decode()))
+    print('Transaction hash {} for {}'.format(binascii.hexlify(receipt['transactionHash']).decode(), network))
     if receipt['status']:
         print('Repository {:s} has been created'.format(repo_name))
         # going to replace the entry in the .git/name folder to location: <hash>
@@ -56,3 +62,4 @@ def create(network):
         write_file(os.path.join('.git', 'name'), str.encode('location: ' + user_key))
     else:
         print('Creating {:s} repository failed'.format(repo_name))
+        sys.exit(1)
