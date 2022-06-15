@@ -13,29 +13,35 @@ from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_pr
 def create(network):
     git_factory = get_factory_contract(network)
     repo_name = read_repo_name()
+
     if not repo_name.startswith('name:'):
         print('The string in file .git/name is not correct. Exiting creation of remote')
-        return
+        sys.exit(1)
     repo_name = repo_name.split('name:')[1].strip()
 
     w3 = get_web3_provider(network)
     
     if repo_name == '':
         print('There is no repository name.')
-        return
+        sys.exit(1)
+
     #TODO: before creating tx and so on, check if this kind of repo exits already :)
     user_address = get_user_dlt_address()
     
     nonce = w3.eth.get_transaction_count(user_address)
 
     print('User address', user_address)
-    gas_price = get_current_gas_price(network)
-
+    try:
+        gas_price = w3.toWei(get_current_gas_price(network), 'gwei')
+    except TypeError:
+        print("Couldn't fetch gas price. Exiting")
+        sys.exit(1)
+    print('Gas price', gas_price)
     print('Preparing transaction to create repository {}'.format(repo_name))
     create_repo_tx = git_factory.functions.createRepository(repo_name).buildTransaction({
         'chainId': get_chain_id(network),
         'gas': 3947750,
-        'gasPrice': w3.toWei(gas_price, 'gwei'),
+        'gasPrice': gas_price,
         'nonce': nonce,
     })
 
@@ -44,11 +50,7 @@ def create(network):
     signed_txn = w3.eth.account.sign_transaction(create_repo_tx, private_key=priv_key)
 
     print('Sending transaction')
-    try:
-        tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    except ValidationError as e:
-        print(e)
-        sys.exit(1)
+    tx_hash = w3.eth.send_raw_transaction(signed_txn.rawTransaction)
     receipt = w3.eth.waitForTransactionReceipt(tx_hash)
 
     # #TODO: print a clickable link to blockexplorer

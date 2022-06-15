@@ -2,6 +2,7 @@ import pytest
 import os
 import shutil
 import json
+import re
 
 from web3 import (
     EthereumTesterProvider,
@@ -90,6 +91,14 @@ def patch_git_factory_for_create(mocker, deploy_contracts):
     mocker.patch('git3Client.gitCommands.create.get_factory_contract', return_value=deploy_contracts)
 
 @pytest.fixture
+def patch_get_current_gas_price_for_create(mocker):
+    mocker.patch('git3Client.gitCommands.create.get_current_gas_price', return_value=None)
+
+@pytest.fixture
+def patch_wait_for_transaction_receipt_for_create(mocker):
+    mocker.patch('git3Client.gitCommands.create.receipt.status', return_value=0)
+
+@pytest.fixture
 def tester_provider():
     return EthereumTesterProvider()
 
@@ -112,11 +121,16 @@ def add_file_to_index():
     yield
 
 @pytest.fixture
-def create_local_config_file_without_identity_file():
-    config_content = "[user]\n\temail = test@test.com\n\tname = pytester"
+def remove_identify_path_from_config():
+    with open(os.path.join('.git', 'config'), 'r') as f:
+        content = f.read()
+    content = re.sub('IdentityFile = .*identity', '', content)
     with open(os.path.join('.git', 'config'), 'w') as f:
-        f.write(config_content)
-    yield
+        f.write(content)
+
+@pytest.fixture
+def delete_local_config_file():
+    os.remove(os.path.join('.git', 'config'))
 
 @pytest.fixture
 def create_local_config_file_with_identity_file():
@@ -157,18 +171,28 @@ def cleanup_repository(create_repository):
     os.chdir(start_path)
     shutil.rmtree(repo_name)
 
-# def pytest_configure(config):
-#     w3 = Web3(EthereumTesterProvider())
-#     to = w3.geth.personal.import_raw_key(hex(PRIVATE_KEY.private_numbers().private_value), '')
-#     value = w3.toWei(1, 'ether')
-#     txn = {
-#         "from": pytest.w3.geth.personal.list_accounts()[0],
-#         "to": to,
-#         "value": value,
-#         "gas": 21000,
-#         "gasPrice": w3.eth.get_block('latest')["baseFeePerGas"] * 21000
-#     }
-#     txn_hash = w3.eth.sendTransaction(txn)
-#     w3.eth.wait_for_transaction_receipt(txn_hash)
+@pytest.fixture
+def change_content_of_name_file():
+    with open(os.path.join(os.path.abspath('.'), '.git', 'name'), 'w') as f:
+        f.write('wrong text in name file')
 
+@pytest.fixture
+def change_repository_name_in_name_file():
+    with open(os.path.join(os.path.abspath('.'), '.git', 'name'), 'w') as f:
+        f.write('name:')
+
+@pytest.fixture
+def prepare_local_repo_till_commit(cleanup_repository, create_file, add_file_to_index, create_local_config_file_with_identity_file):
+    """
+    Combines multiple fixture into one. This fixture creates a local git repository, creates a local file
+    and adds it to the index. It also creates a local config file.
+    """
+    yield
+
+@pytest.fixture
+def prepare_local_repo_till_create(prepare_local_repo_till_commit, commit_to_repo):
+    """
+    Combines multiple fixture into one.This fixture prepares a repository until is is possible to commit and commits the local file
+    """
+    yield
     

@@ -103,7 +103,7 @@ def get_current_gas_price(network):
     """
     print('Getting current gas price')
     if network == 'mumbai':
-        return requests.get(MUMBAI_GAS_STATION).json()['fast']
+        return requests.get(MUMBAI_GAS_STATION, verify=False).json()['fast']['maxPriorityFee']
     elif network == 'godwoken':
         return 0
     else:
