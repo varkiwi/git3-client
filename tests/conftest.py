@@ -19,7 +19,7 @@ from git3Client.gitCommands.commit import commit
 REPO_FILES = ['Readme.md']
 PRIVATE_KEY = ec.generate_private_key(ec.SECP256K1())
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def fund_user(w3):
     to = w3.geth.personal.import_raw_key(hex(PRIVATE_KEY.private_numbers().private_value), '')
     value = w3.toWei(1, 'ether')
@@ -34,7 +34,7 @@ def fund_user(w3):
     w3.eth.wait_for_transaction_receipt(txn_hash)
     return w3
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def deploy_contracts(eth_tester, fund_user):
     w3 = fund_user
     deploy_address = eth_tester.get_accounts()[0]
@@ -70,15 +70,15 @@ def deploy_contracts(eth_tester, fund_user):
 
     return git3_factory(tx_receipt.contractAddress)
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def tester_provider():
     return EthereumTesterProvider()
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def eth_tester(tester_provider):
     return tester_provider.ethereum_tester
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def w3(tester_provider):
     return Web3(tester_provider)
 
@@ -93,14 +93,6 @@ def patch_git_factory_for_create(mocker, deploy_contracts):
 @pytest.fixture
 def patch_get_current_gas_price_for_create(mocker):
     mocker.patch('git3Client.gitCommands.create.get_current_gas_price', return_value=None)
-
-@pytest.fixture
-def patch_wait_for_transaction_receipt_for_create(mocker):
-    mocker.patch('git3Client.gitCommands.create.receipt.status', return_value=0)
-
-@pytest.fixture
-def tester_provider():
-    return EthereumTesterProvider()
 
 @pytest.fixture
 def move_to_root_and_back():
