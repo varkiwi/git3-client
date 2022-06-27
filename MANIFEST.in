@@ -1,1 +1,2 @@
 include git3Client/artifacts *.json
+prune tests*
