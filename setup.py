@@ -23,7 +23,7 @@ setup(
             'git3Client/artifacts/contracts/GitRepository.sol/GitRepository.json',
             ])
     ],
-    version = "0.2.3",
+    version = "0.2.4",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
