@@ -4,7 +4,6 @@ from pathlib import Path
 from cryptography.hazmat.primitives import serialization
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-from git3Client.exceptions import NoRepositoryError
 from git3Client.config.config import MUMBAI_GAS_STATION, MUMBAI_CHAINID, GODWOKEN_TESTNET_CHAINID
 
 def get_repo_root_path() -> str:
@@ -31,6 +30,7 @@ def get_repo_root_path() -> str:
         parent += 1
     if contains_git_folder:
         return str(path_to_test.parents[parent])
+    
     raise NoRepositoryError('fatal: not a git repository (or any of the parent directories): .git')
 
 def get_value_from_config_file(key: str) -> str:
@@ -103,7 +103,7 @@ def get_current_gas_price(network):
     """
     print('Getting current gas price')
     if network == 'mumbai':
-        return requests.get(MUMBAI_GAS_STATION).json()['fast']
+        return requests.get(MUMBAI_GAS_STATION, verify=False).json()['fast']['maxPriorityFee']
     elif network == 'godwoken':
         return 0
     else:

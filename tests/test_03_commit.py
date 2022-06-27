@@ -15,13 +15,13 @@ class Test_Commit():
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
 
-    def test_commit_with_missing_config(self, cleanup_repository, create_file, add_file_to_index):
+    def test_commit_with_missing_config(self, prepare_local_repo_till_commit, delete_local_config_file):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             commit(message="1st commit message")
         assert pytest_wrapped_e.type == SystemExit
         assert pytest_wrapped_e.value.code == 1
     
-    def test_successfully_commit(self, cleanup_repository, create_file, add_file_to_index, create_local_config_file):
+    def test_successfully_commit(self, prepare_local_repo_till_commit):
         commit(message="1st commit message")
 
     

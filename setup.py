@@ -6,7 +6,7 @@ readme.close()
 
 setup(
     name = "git3Client",
-    packages = find_packages('.'),
+    packages = find_packages('.', exclude=("tests",)),
     include_package_data = True,
     entry_points = {
         "console_scripts": [
@@ -23,7 +23,7 @@ setup(
             'git3Client/artifacts/contracts/GitRepository.sol/GitRepository.json',
             ])
     ],
-    version = "0.2.3",
+    version = "0.2.4",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
