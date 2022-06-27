@@ -15,6 +15,7 @@ from cryptography.hazmat.primitives import serialization
 from git3Client.gitCommands.init import init
 from git3Client.gitCommands.add import add
 from git3Client.gitCommands.commit import commit
+from git3Client.gitCommands.create import create
 
 REPO_FILES = ['Readme.md']
 PRIVATE_KEY = ec.generate_private_key(ec.SECP256K1())
@@ -95,6 +96,18 @@ def patch_get_current_gas_price_for_create(mocker):
     mocker.patch('git3Client.gitCommands.create.get_current_gas_price', return_value=None)
 
 @pytest.fixture
+def patch_push_data_to_storage_for_push(mocker):
+    mocker.patch('git3Client.gitCommands.push.push_data_to_storage', return_value='AwesomeCID')
+
+@pytest.fixture
+def patch_check_if_repo_created_for_push(mocker):
+    mocker.patch('git3Client.gitCommands.push.check_if_repo_created', return_value='true')
+
+@pytest.fixture
+def patch_push_new_cid_for_push(mocker):
+    mocker.patch('git3Client.gitCommands.push.push_new_cid', return_value='true')
+
+@pytest.fixture
 def move_to_root_and_back():
     current_path = os.getcwd()
     os.chdir('/')
@@ -141,11 +154,6 @@ def create_local_config_file_with_identity_file():
     yield
 
 @pytest.fixture
-def commit_to_repo():
-    commit(message="1st commit message")
-    yield
-
-@pytest.fixture
 def create_repository():
     start_path = os.path.abspath(os.getcwd())
     repo_name = 'git3_test_repository'
@@ -182,9 +190,14 @@ def prepare_local_repo_till_commit(cleanup_repository, create_file, add_file_to_
     yield
 
 @pytest.fixture
-def prepare_local_repo_till_create(prepare_local_repo_till_commit, commit_to_repo):
+def prepare_local_repo_till_create(prepare_local_repo_till_commit):
     """
-    Combines multiple fixture into one.This fixture prepares a repository until is is possible to commit and commits the local file
+    This fixture prepares a repository until is is possible to commit and commits the local file
     """
+    commit(message="1st commit message")
     yield
-    
+
+@pytest.fixture
+def mock_successful_push(mocker, request):
+    for key in request.param:
+        mocker.patch("git3Client.gitCommands.push." + key, return_value=request.param[key])
