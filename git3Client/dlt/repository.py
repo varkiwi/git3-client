@@ -92,7 +92,7 @@ def get_all_remote_commits(commit_cid) -> list:
 
     return all_commits
 
-def check_if_repo_created():
+def check_if_repo_created() -> bool:
     """
     Checks if the repository has been already registered in the gitFactory contract
     If it hasn't, False is returned, otherwise True
