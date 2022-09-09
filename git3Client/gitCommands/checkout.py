@@ -12,11 +12,11 @@ from git3Client.utils.utils import get_repo_root_path, read_file, write_file, re
 
 def print_checkout_error(changed, new, deleted):
     print('error: Your local changes to the following file would be overwritten by checkout:')
-    if len(changed) is not 0:
+    if len(changed) != 0:
         print('  {}'.format(changed[0]))
-    elif len(new) is not 0:
+    elif len(new) != 0:
         print('  {}'.format(new[0]))
-    elif len(deleted) is not 0:
+    elif len(deleted) != 0:
         print('  {}'.format(deleted[0]))
     print('Please commit your changes before you switch branches.')
     exit(1)
@@ -79,11 +79,11 @@ def checkout(branch):
         exit(0)
 
     changed, new, deleted = get_status_workspace()
-    if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
+    if len(changed) != 0 or len(new) != 0 or len(deleted) != 0:
         print_checkout_error(changed, new, deleted)
     
     changed, new, deleted = get_status_commit()
-    if len(changed) is not 0 or len(new) is not 0 or len(deleted) is not 0:
+    if len(changed) != 0 or len(new) != 0 or len(deleted) != 0:
         print_checkout_error(changed, new, deleted)
 
     commit_entries = read_commit_entries(target_commit_hash)

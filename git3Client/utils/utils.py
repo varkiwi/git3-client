@@ -99,13 +99,14 @@ def get_private_key():
 
 def get_current_gas_price(network):
     """
-    Gets the current standard gas price for the network
+    Gets the current standard gas price in Gwei for the network
     """
     print('Getting current gas price')
     if network == 'mumbai':
-        return requests.get(MUMBAI_GAS_STATION, verify=False).json()['fast']['maxPriorityFee']
+        return requests.get(MUMBAI_GAS_STATION).json()['fast']['maxPriorityFee']
     elif network == 'godwoken':
-        return 0
+        # returning 10 Gwei
+        return 10.0
     else:
         print(f"Network {network} not supported")
         sys.exit(1)

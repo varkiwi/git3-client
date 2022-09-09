@@ -8,7 +8,7 @@ from git3Client.dlt.contract import get_factory_contract
 from git3Client.dlt.provider import get_web3_provider
 from git3Client.dlt.user import get_user_dlt_address
 
-from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, write_file, get_chain_id
+from git3Client.utils.utils import read_repo_name, get_private_key, write_file, get_chain_id
 
 def create(network):
     git_factory = get_factory_contract(network)
@@ -31,12 +31,8 @@ def create(network):
     nonce = w3.eth.get_transaction_count(user_address)
 
     print('User address', user_address)
-    try:
-        gas_price = w3.toWei(get_current_gas_price(network), 'gwei')
-    except TypeError:
-        print("Couldn't fetch gas price. Exiting")
-        sys.exit(1)
-    print('Gas price', gas_price)
+    gas_price = w3.eth.gas_price
+    
     print('Preparing transaction to create repository {}'.format(repo_name))
     create_repo_tx = git_factory.functions.createRepository(repo_name).buildTransaction({
         'chainId': get_chain_id(network),
