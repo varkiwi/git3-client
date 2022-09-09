@@ -91,9 +91,9 @@ def patch_web3_provider(mocker, w3):
 def patch_git_factory_for_create(mocker, deploy_contracts):
     mocker.patch('git3Client.gitCommands.create.get_factory_contract', return_value=deploy_contracts)
 
-@pytest.fixture
-def patch_get_current_gas_price_for_create(mocker):
-    mocker.patch('git3Client.gitCommands.create.get_current_gas_price', return_value=None)
+# @pytest.fixture
+# def patch_get_current_gas_price_for_create(mocker):
+#     mocker.patch('git3Client.gitCommands.create.get_current_gas_price', return_value=None)
 
 @pytest.fixture
 def patch_push_data_to_storage_for_push(mocker):
