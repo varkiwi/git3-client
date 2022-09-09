@@ -122,7 +122,7 @@ Activate the virtual environment: `source [name]/bin/activate`
 
 Install requirements: `arch -x86_64 pip install -r requirements.txt `
 
-Install the git3 client in the virtual environment: `python setup.py install`
+Install the git3 client in the virtual environment: `pip install .`
 
 To deactivate the virtual environment, just type `deactivate`
 
