@@ -15,12 +15,8 @@ setup(
     },
     data_files=[
         ('contractAbi', [
-            'git3Client/artifacts/contracts/facets/GitBranch.sol/GitBranch.json',
-            'git3Client/artifacts/contracts/facets/GitIssues.sol/GitIssues.json',
-            'git3Client/artifacts/contracts/facets/GitRepositoryManagement.sol/GitRepositoryManagement.json',
-            'git3Client/artifacts/contracts/facets/GitTips.sol/GitTips.json',
-            'git3Client/artifacts/contracts/GitFactory.sol/GitFactory.json',
-            'git3Client/artifacts/contracts/GitRepository.sol/GitRepository.json',
+            'git3Client/artifacts/contracts/repo_facets/GitBranch.sol/GitBranch.json',
+            'git3Client/artifacts/contracts/factory_facets/RepositoryManagement.sol/RepositoryManagement.json',
             ])
     ],
     version = "0.2.4",
