@@ -13,7 +13,7 @@ from git3Client.gitInternals.gitObject import read_object
 from git3Client.gitInternals.gitTree import read_tree
 from git3Client.gitInternals.fileMode import GIT_NORMAL_FILE_MODE, GIT_TREE_MODE
 
-from git3Client.utils.utils import read_repo_name, get_current_gas_price, get_private_key, get_repo_root_path, get_chain_id
+from git3Client.utils.utils import read_repo_name, get_private_key, get_repo_root_path, get_chain_id
 
 def push_new_cid(branchName, cid):
     repo_name = read_repo_name()
@@ -36,12 +36,12 @@ def push_new_cid(branchName, cid):
 
     nonce = w3.eth.get_transaction_count(user_address)
 
-    gas_price = get_current_gas_price(network)
+    gas_price = w3.eth.gas_price
 
     create_push_tx = branch_contract.functions.push(branchName, cid).buildTransaction({
         'chainId': get_chain_id(network),
         'gas': 746427,
-        'gasPrice': w3.toWei(gas_price, 'gwei'),
+        'gasPrice': gas_price,
         'nonce': nonce,
     })
     priv_key = bytes.fromhex(get_private_key())
@@ -194,7 +194,7 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
 
             remote_database['path'].pop()
 
-        if 'cid' not in subdirFiles[entry[1]] or (int(remote_database['committer']['date_seconds']) > int(subdirFiles[entry[1]]['commit_time']) and subdirFiles[entry[1]]['sha1'] != entry[2]):
+        if 'cid' not in subdirFiles[entry[1]] or cid != subdirFiles[entry[1]]['cid']:
             subdirFiles[entry[1]]['cid'] = cid
         
         tree_entries.append({
@@ -210,6 +210,7 @@ def push_tree(tree_hash: str, folder_name: str, remote_database: dict) -> str:
         'name': folder_name,
         'sha1': tree_hash
     }
+
     cid = push_data_to_storage(tree_to_push)
     return cid
 
@@ -276,10 +277,11 @@ def push_data_to_storage(data):
     time_to_sleep = 12
     while True:
         try:
-            cid = client.add_json(data)
+            data = client.upload_json(data)
             break
-        except:
+        except Exception as e:
+            print(e)
             time.sleep(time_to_sleep)
             time_to_sleep += 2
             print(f'Due to too many requests, we will have to wait for {time_to_sleep} seconds')
-    return cid
+    return data['cid']

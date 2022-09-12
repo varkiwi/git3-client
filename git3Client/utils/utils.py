@@ -4,7 +4,7 @@ from pathlib import Path
 from cryptography.hazmat.primitives import serialization
 
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
-from git3Client.config.config import MUMBAI_GAS_STATION, MUMBAI_CHAINID, GODWOKEN_TESTNET_CHAINID
+from git3Client.config.config import MUMBAI_CHAINID, GODWOKEN_TESTNET_CHAINID
 
 def get_repo_root_path() -> str:
     """
@@ -96,19 +96,6 @@ def get_private_key():
         password=None
     )
     return hex(private_key.private_numbers().private_value)[2:]
-
-def get_current_gas_price(network):
-    """
-    Gets the current standard gas price for the network
-    """
-    print('Getting current gas price')
-    if network == 'mumbai':
-        return requests.get(MUMBAI_GAS_STATION, verify=False).json()['fast']['maxPriorityFee']
-    elif network == 'godwoken':
-        return 0
-    else:
-        print(f"Network {network} not supported")
-        sys.exit(1)
 
 def get_chain_id(network):
     if network == 'mumbai':

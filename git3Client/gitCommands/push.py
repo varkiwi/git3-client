@@ -14,6 +14,7 @@ def push():
     
     local_sha1 = get_active_branch_hash()
     remote_database_cid = get_remote_branch_hash(active_branch_name)
+
     client = getStorageClient()
     # if remote_cid is none, nothing has been pushed yet.
     if remote_database_cid != None:

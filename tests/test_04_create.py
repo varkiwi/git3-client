@@ -53,7 +53,7 @@ class Test_Create():
         patch_web3_provider,
         patch_git_factory_for_create,
         prepare_local_repo_till_create,
-        patch_get_current_gas_price_for_create
+        # patch_get_current_gas_price_for_create
     ):
         with pytest.raises(SystemExit) as pytest_wrapped_e:
             create("mumbai")

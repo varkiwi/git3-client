@@ -18,8 +18,10 @@ def read_contract_abi(contractName):
     real_path[-2] = 'artifacts'
     real_path[-1] = 'contracts'
 
-    if contractName is not "GitFactory" and contractName is not "GitRepository":
-        real_path.append('facets')
+    if contractName in ["GitBranch"]:
+        real_path.append('repo_facets')
+    if contractName in ["RepositoryManagement"]:
+        real_path.append('factory_facets')
 
     abi_path = '/'.join(real_path)
 

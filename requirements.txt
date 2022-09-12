@@ -20,7 +20,6 @@ eth-rlp==0.2.1
 eth-typing==2.2.2
 eth-utils==1.9.5
 frozenlist==1.3.0
--e git+https://github.com/varkiwi/git3-client.git@cb759dfd88cd981316b49b3ebb5da969c4ee0640#egg=git3Client
 hexbytes==0.2.1
 idna==2.10
 importlib-metadata==4.0.1
