@@ -19,7 +19,7 @@ setup(
             'git3Client/artifacts/contracts/factory_facets/RepositoryManagement.sol/RepositoryManagement.json',
             ])
     ],
-    version = "0.2.4",
+    version = "0.2.5",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
