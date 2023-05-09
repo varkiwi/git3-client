@@ -2,7 +2,7 @@ import ipfshttpclient
 import json
 import requests
 
-from git3Client.config.config import WEB3_STORAGE_API_KEY
+from git3Client.utils.utils import get_value_from_config_file
 
 client = None
 
@@ -16,7 +16,8 @@ def getStorageClient():
     """
     global client
     if client is None:
-        client = Web3Storage(WEB3_STORAGE_API_KEY)
+        web3_storage_api_key = get_value_from_config_file('Web3StorageApiKey')
+        client = Web3Storage(web3_storage_api_key)
     return client
 
 

@@ -52,8 +52,10 @@ Here is how the contant of the `~/.gitconfig` file looks like
         email = author email
         name = author name
         IdentityFile = path to private key in pem format. It has to be the absolute path! No $HOME or similar stuff in it
+        Web3StorageApiKey = APIKey
 ```
 Set the values according to your needs.
+The `Web3StorageApiKey` can be obtained from https://web3.storage/. Just create an account and copy the API key from the settings page.
 
 #### Repository config
 If you want to use a different configuration for each repository, just add a `config` file into the `.git/` in your repository and add the same entries as in the `~/.gitconfig` file.

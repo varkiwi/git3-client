@@ -19,7 +19,7 @@ setup(
             'git3Client/artifacts/contracts/factory_facets/RepositoryManagement.sol/RepositoryManagement.json',
             ])
     ],
-    version = "0.2.5",
+    version = "0.2.6",
     description = "Git3 Python client",
     long_description = content,
     long_description_content_type="text/markdown",
@@ -39,7 +39,7 @@ setup(
         'charset-normalizer==2.0.12',
         'commonmark==0.9.1',
         'cryptography==36.0.2',
-        'cytoolz==0.11.0',
+        'cytoolz==0.12.1',
         'docutils==0.18.1',
         'eth-abi==2.1.1',
         'eth-account==0.5.5',
