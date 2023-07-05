@@ -20,6 +20,10 @@ from git3Client.gitCommands.create import create
 REPO_FILES = ['Readme.md']
 PRIVATE_KEY = ec.generate_private_key(ec.SECP256K1())
 
+@pytest.fixture()
+def change_test_dir(tmpdir, monkeypatch):
+    monkeypatch.chdir(tmpdir)
+
 @pytest.fixture(scope='session')
 def fund_user(w3):
     to = w3.geth.personal.import_raw_key(hex(PRIVATE_KEY.private_numbers().private_value), '')
@@ -39,10 +43,10 @@ def fund_user(w3):
 def deploy_contracts(eth_tester, fund_user):
     w3 = fund_user
     deploy_address = eth_tester.get_accounts()[0]
-    facets_contracts = ['GitBranch', 'GitIssues', 'GitRepositoryManagement', 'GitTips']
+    facets_contracts = [['GitBranch', True]]
     contract_information = []
     for facet in facets_contracts:    
-        with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts', 'facets', f"{facet}.sol", f"{facet}.json")) as f:
+        with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts', 'facets', f"{facet[0]}.sol", f"{facet[0]}.json")) as f:
             contract_data = json.loads(f.read())
 
         contract = w3.eth.contract(abi=contract_data['abi'], bytecode=contract_data['bytecode'])
@@ -52,9 +56,9 @@ def deploy_contracts(eth_tester, fund_user):
             
         tx_hash = contract.constructor().transact({'from': deploy_address})
         tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash, 180)
-        contract_information.append([tx_receipt.contractAddress, function_signatures])
+        contract_information.append([tx_receipt.contractAddress, function_signatures, facet[1]])
 
-    # deplying GitContractRegistry
+    # deploying GitRepoContractRegistry
     with open(os.path.join(os.path.abspath('.'), 'git3Client', 'artifacts', 'contracts', 'GitContractRegistry.sol', "GitContractRegistry.json")) as f:
         contract_data = json.loads(f.read())
     contract = w3.eth.contract(abi=contract_data['abi'], bytecode=contract_data['bytecode'])

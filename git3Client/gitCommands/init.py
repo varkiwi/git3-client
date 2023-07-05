@@ -1,5 +1,7 @@
 import os
 
+from pathlib import Path
+
 from git3Client.utils.utils import write_file
 
 def init(repo: str = '.'):
@@ -12,19 +14,17 @@ def init(repo: str = '.'):
     Returns:
         Boolean: Returns true if successful, false otherwise.
     """
+    if repo == '.':
+        repo = os.getcwd()
+
     if os.path.exists(os.path.join(repo, '.git')):
         print(f"Repository {repo} exists already")
         return False
 
-    cwd = os.getcwd()
-    if repo != '.':
-        os.mkdir(repo)
-        repoName = repo
-        fullPath = cwd + '/' + repo
-    else:
-        repoName = cwd.split('/')[-1]
-        fullPath = cwd
-
+    print('REPO', repo)
+    print(os.path.exists(repo))
+    if not os.path.exists(repo):
+        os.makedirs(repo)
     os.mkdir(os.path.join(repo, '.git'))
 
     # create necessary directories
@@ -32,8 +32,9 @@ def init(repo: str = '.'):
         os.mkdir(os.path.join(repo, '.git', name))
     write_file(os.path.join(repo, '.git', 'HEAD'), b'ref: refs/heads/main')
 
+    repo_name = os.path.basename(repo)
     # write the name of the repository into a file
-    write_file(os.path.join(repo, '.git', 'name'), str.encode('name: ' + repoName))
+    write_file(os.path.join(repo, '.git', 'name'), str.encode('name: ' + repo_name))
     
-    print('Initialized empty Git3 repository in: {}/.git/'.format(fullPath))
+    print('Initialized empty Git3 repository in: {}/.git/'.format(repo))
     return True
