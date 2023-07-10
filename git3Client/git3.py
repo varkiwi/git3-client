@@ -21,9 +21,12 @@ from git3Client.gitCommands.push import push
 from git3Client.gitCommands.pull import pull
 from git3Client.gitCommands.status import status
 
-from git3Client.utils.utils import read_file
+from git3Client.gitInternals.repository import GitRepository
 
-def main():
+from git3Client.utils.utils import read_file
+from git3Client.utils.utils import get_repo_root_path
+
+def main(args):
     parser = argparse.ArgumentParser()
     sub_parsers = parser.add_subparsers(dest='command', metavar='command')
     sub_parsers.required = True
@@ -39,7 +42,7 @@ def main():
             help='List and Create branches')
     sub_parser.add_argument('-r', '--remotes', action='store_true',
             help='act on remote-tracking branches')
-    sub_parser = sub_parser.add_argument('branchname', metavar='<branchname>', nargs='?',
+    sub_parser.add_argument('branchname', metavar='<branchname>', nargs='?',
             help='Create a new branch named <branchname>')
 
     # Cat-file
@@ -156,9 +159,22 @@ def main():
     sub_parser = sub_parsers.add_parser('status',
             help='show status of working copy')
 
-    args = parser.parse_args()
+    args = parser.parse_args(args)
+
+    if args.command == 'init':
+        init(args.repo)
+        return
+
+
+    try:
+        repo_root_path = get_repo_root_path()
+    except NoRepositoryError as nre:
+        print(nre)
+        exit(1)
+    git_repository = GitRepository(repo_root_path)
+
     if args.command == 'add':
-        add(args.paths)
+        add(git_repository, args.paths)
     elif args.command == 'branch':
         if args.branchname:
             createBranch(args.command, args.branchname)
@@ -190,8 +206,8 @@ def main():
         print('Your address is: {}'.format(address))
     elif args.command == 'hash-object':
         hashObject(read_file(args.path), args.type, write=args.write)
-    elif args.command == 'init':
-        init(args.repo)
+    # elif args.command == 'init':
+    #     init(args.repo)
     elif args.command == 'ls-files':
         ls_files(details=args.stage)
     elif args.command == 'merge':

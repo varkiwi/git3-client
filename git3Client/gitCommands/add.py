@@ -8,10 +8,11 @@ from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 from git3Client.gitInternals.gitIndex import read_index, write_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.IndexEntry import IndexEntry
+from git3Client.gitInternals.repository import GitRepository
 
 from git3Client.utils.utils import get_repo_root_path, read_file
 
-def add(paths: List[str]) -> None:
+def add(repository: GitRepository, paths: List[str]) -> None:
     """
     Add all file paths to git index.
 
@@ -19,15 +20,8 @@ def add(paths: List[str]) -> None:
         paths (List): List of files to be added to the git index.
     
     Raises:
-        NoRepositoryError: If not git repository is found.
         FileNotFoundError: If a file to be added to the index is not found.
     """
-    try:
-        repo_root_path = get_repo_root_path()
-    except NoRepositoryError as nre:
-        print(nre)
-        exit(1)
-
     paths = [p.replace('\\', '/') for p in paths]
     all_entries = []
     # transfer paths to relative paths. Relative to the repository root

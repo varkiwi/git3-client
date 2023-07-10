@@ -66,8 +66,11 @@ If you want to use a different configuration for each repository, just add a `co
 To create a new local repository, you have to call `git3 init [name]`
 You can either provide a name for the repository or just call it without a name. In case you don't provide a name, the repository is initialized in the current directory you are in.
 
+## Git branch
+With the `git3 branch` command you are able to list all branches of your repository. The current branch is marked with a `*`. If you want to create a new branch, all you have to do is to add the name: `git3 branch [name]`.
+
 ## Git get-address
-In case you want to know the Ethereum based address derived form yuor private key, use the `git3 get-address` command. It will derive the Ethereum address from the IdentityFile specified in the config file and show it to you.
+In case you want to know the Ethereum based address derived form your private key, use the `git3 get-address` command. It will derive the Ethereum address from the IdentityFile specified in the config file and show it to you.
 
 ## Git add
 To add a file to your repository, just use `git3 add file_name`
@@ -128,7 +131,7 @@ Install the git3 client in the virtual environment: `pip install .`
 
 To deactivate the virtual environment, just type `deactivate`
 
-Coverage: `coverage run -m pytest`
+Coverage: `coverage run --source=git3Client  -m pytest`
 
 Read coverage report: `coverage report -m`
 
