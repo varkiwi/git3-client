@@ -4,7 +4,7 @@ from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 
 from git3Client.utils.utils import list_files_in_dir, get_repo_root_path, read_file, write_file
 
-def listBranches(remotes):
+def list_branches(remotes):
     """Add all file paths to git index."""
     try:
         repo_root_path = get_repo_root_path()
@@ -25,7 +25,7 @@ def listBranches(remotes):
         result += '* {}\n'.format(branch)
     print(result)
 
-def createBranch(command, newBranchName):
+def create_branch(command, newBranchName):
     """
     This function creates a new branch head named <name> which points to the current HEAD.
 

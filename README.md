@@ -69,6 +69,9 @@ You can either provide a name for the repository or just call it without a name.
 ## Git branch
 With the `git3 branch` command you are able to list all branches of your repository. The current branch is marked with a `*`. If you want to create a new branch, all you have to do is to add the name: `git3 branch [name]`.
 
+## Git cat-file
+In order to see the content of a file, use the `git3 cat-file [mode] [hash]` command. It will show you the content of the file with the specified hash. The mode is optional and can be either `commit`, `blob`, or `tree`. If you don't provide a mode, the default is `blob`.
+
 ## Git get-address
 In case you want to know the Ethereum based address derived form your private key, use the `git3 get-address` command. It will derive the Ethereum address from the IdentityFile specified in the config file and show it to you.
 
@@ -84,7 +87,7 @@ If you want to push your repository, just use `git3 push .`
 In order to be able to push, a smart contract is required. If you haven't registered your repository yet, use `git3 create`
 
 ## Git create
-In order to have a remote repository, you have to register your repository. Use the `git3 create` command. It sends a transaction to the factory contract, which deployes a new smart contract for your repository. Once this is done, you are able to push your repository.
+In order to have a remote repository, you have to register your repository. Use the `git3 create` command. It sends a transaction to the factory contract, which deploys a new smart contract for your repository. Once this is done, you are able to push your repository.
 
 ## Git clone
 git3 clone 0xE838bC8b2D069CE43894143836fA974643646291/newTestRepo

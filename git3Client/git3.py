@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from git3Client.gitCommands.add import add
-from git3Client.gitCommands.branch import listBranches, createBranch
+from git3Client.gitCommands.branch import list_branches, create_branch
 from git3Client.gitCommands.catFile import cat_file
 from git3Client.gitCommands.checkout import checkout
 from git3Client.gitCommands.clone import clone
@@ -22,7 +22,7 @@ from git3Client.gitCommands.pull import pull
 from git3Client.gitCommands.status import status
 
 from git3Client.gitInternals.repository import GitRepository
-
+from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 from git3Client.utils.utils import read_file
 from git3Client.utils.utils import get_repo_root_path
 
@@ -67,7 +67,7 @@ def main(args):
     sub_parser = sub_parsers.add_parser('commit',
             help='commit current state of index to current active branch')
     sub_parser.add_argument('-a', '--author',
-            help='commit author in format "A U Thor <author@example.com>" '
+            help='commit author in format "Author <author@example.com>" '
                  '(uses GIT_AUTHOR_NAME and GIT_AUTHOR_EMAIL environment '
                  'variables by default)')
     sub_parser.add_argument('-m', '--message', required=True,
@@ -93,7 +93,7 @@ def main(args):
                  'copy)')
     sub_parser.add_argument('--staged', action='store_true',
             help='This form is to view the changes you staged for the '
-            'next commit relative to the HEAD commmit.')
+            'next commit relative to the HEAD commit.')
 
     # Hash-object
     sub_parser = sub_parsers.add_parser('hash-object',
@@ -130,7 +130,7 @@ def main(args):
 
     # Get-Address
     sub_parser = sub_parsers.add_parser('get-address',
-            help='Get Matic wallet address')
+            help='Get blockchain wallet address')
 
     # Merge
     sub_parser = sub_parsers.add_parser('merge',
@@ -177,14 +177,14 @@ def main(args):
         add(git_repository, args.paths)
     elif args.command == 'branch':
         if args.branchname:
-            createBranch(args.command, args.branchname)
+            create_branch(args.command, args.branchname)
         else:
-            listBranches(args.remotes)
+            list_branches(args.remotes)
     elif args.command == 'checkout':
         if args.b is False:
             checkout(args.branch)
         else:
-            createBranch('checkout', args.branch)
+            create_branch('checkout', args.branch)
     elif args.command == 'cat-file':
         try:
             cat_file(args.mode, args.hash_prefix)
@@ -206,10 +206,8 @@ def main(args):
         print('Your address is: {}'.format(address))
     elif args.command == 'hash-object':
         hashObject(read_file(args.path), args.type, write=args.write)
-    # elif args.command == 'init':
-    #     init(args.repo)
-    elif args.command == 'ls-files':
-        ls_files(details=args.stage)
+    # elif args.command == 'ls-files':
+    #     ls_files(details=args.stage)
     elif args.command == 'merge':
         merge(args.sourceBranch)
     elif args.command == 'push':
@@ -218,5 +216,3 @@ def main(args):
         pull()
     elif args.command == 'status':
         status()
-    else:
-        assert False, 'unexpected command {!r}'.format(args.command)
