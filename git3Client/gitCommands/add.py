@@ -24,6 +24,7 @@ def add(paths: List[str]) -> None:
     Raises:
         FileNotFoundError: If a file to be added to the index is not found.
     """
+    print(paths)
     paths = [p.replace("\\", "/") for p in paths]
     all_entries = []
     # transfer paths to relative paths. Relative to the repository root

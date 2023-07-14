@@ -66,9 +66,8 @@ def test_add_error_path_missing():
 @unittest.mock.patch("git3Client.git3.GitRepository")
 @unittest.mock.patch("git3Client.git3.add", return_value=True)
 def test_add_successful(mocked_add, mocked_git_repository, path):
-    mocked_git_repository_instance = mocked_git_repository.return_value
     git3.main(["add", *path])
-    mocked_add.assert_called_once_with(mocked_git_repository_instance, path)
+    mocked_add.assert_called_once_with(path)
 
 
 @pytest.mark.parametrize(
