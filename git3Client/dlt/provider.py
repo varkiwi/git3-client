@@ -10,12 +10,10 @@ def get_web3_provider(network):
 
     network: the network for which the provider should be loaded
     """
-    if network == 'mumbai':
+    if network == "mumbai":
         return Web3(Web3.HTTPProvider(MUMBAI_RPC_ADDRESS))
-    elif network == 'godwoken':
+    elif network == "godwoken":
         return Web3(Web3.HTTPProvider(GODWOKEN_TESTNET_RPC_ADDRESS))
     else:
         print(f"Network {network} not supported")
         sys.exit(1)
-        
-    

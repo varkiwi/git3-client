@@ -1,5 +1,6 @@
 from git3Client.dlt.user import get_user_dlt_address
 
+
 def getAddress():
     """
     Prints users address on the console

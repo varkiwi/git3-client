@@ -1,10 +1,14 @@
 from .provider import get_web3_provider
 
-from git3Client.config.config import MUMBAI_GIT_FACTORY_ADDRESS, GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS
+from git3Client.config.config import (
+    MUMBAI_GIT_FACTORY_ADDRESS,
+    GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS,
+)
 
 import json
 import os
 import sys
+
 
 def read_contract_abi(contractName):
     """
@@ -14,20 +18,21 @@ def read_contract_abi(contractName):
 
     returns: abi
     """
-    real_path = os.path.realpath(__file__).split('/')
-    real_path[-2] = 'artifacts'
-    real_path[-1] = 'contracts'
+    real_path = os.path.realpath(__file__).split("/")
+    real_path[-2] = "artifacts"
+    real_path[-1] = "contracts"
 
     if contractName in ["GitBranch"]:
-        real_path.append('repo_facets')
+        real_path.append("repo_facets")
     if contractName in ["RepositoryManagement"]:
-        real_path.append('factory_facets')
+        real_path.append("factory_facets")
 
-    abi_path = '/'.join(real_path)
+    abi_path = "/".join(real_path)
 
     with open(f"{abi_path}/{contractName}.sol/{contractName}.json", "r") as f:
         data = json.load(f)
-    return data['abi']
+    return data["abi"]
+
 
 def get_factory_contract(network):
     """
@@ -39,13 +44,14 @@ def get_factory_contract(network):
     """
     w3 = get_web3_provider(network)
     abi = read_contract_abi("GitFactory")
-    if network == 'mumbai':
+    if network == "mumbai":
         return w3.eth.contract(address=MUMBAI_GIT_FACTORY_ADDRESS, abi=abi)
-    elif network == 'godwoken':
+    elif network == "godwoken":
         return w3.eth.contract(address=GODWOKEN_TESTNET_GIT_FACTORY_ADDRESS, abi=abi)
     else:
         print(f"Network {network} not supported")
         sys.exit(1)
+
 
 def get_facet_contract(contractName, address, network):
     """

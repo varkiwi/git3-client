@@ -63,7 +63,7 @@ be very tedious on the frontend side.
 Therefore, we introduce a database. This is a json, which represents the file structure of the repository and is pushed
 to IPFS. The cid is pushed to the Smart Contract, to make it for clients easier to reconstruct the file structure of the
 repository. The database contains a link to the youngest commit, so it is possible to go through the entire chain
-of commits, trees and blobs, and verify the information. 
+of commits, trees and blobs, and verify the information.
 
 Here is the structure of the database:
 ```json

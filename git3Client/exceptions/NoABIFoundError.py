@@ -5,6 +5,7 @@ class NoABIFound(Exception):
     Attributes:
         message -- Error message
     """
+
     def __init__(self, message):
         Exception.__init__(self, message)
         self.message = message

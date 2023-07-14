@@ -6,6 +6,7 @@ from git3Client.utils.utils import get_value_from_config_file
 
 client = None
 
+
 def getStorageClient():
     """
     The getStorageClient function returns an Web3Storage object which can be used to upload and download
@@ -16,7 +17,7 @@ def getStorageClient():
     """
     global client
     if client is None:
-        web3_storage_api_key = get_value_from_config_file('Web3StorageApiKey')
+        web3_storage_api_key = get_value_from_config_file("Web3StorageApiKey")
         client = Web3Storage(web3_storage_api_key)
     return client
 
@@ -29,7 +30,9 @@ class Web3Storage:
         self.headers = {"Authorization": f"Bearer {api_key}"}
 
     def upload_json(self, json_data: dict) -> dict:
-        response = requests.post(f"{self.upload_endpoint}upload", json = json_data, headers=self.headers)
+        response = requests.post(
+            f"{self.upload_endpoint}upload", json=json_data, headers=self.headers
+        )
         if response.status_code == 200:
             return json.loads(response.text)
 

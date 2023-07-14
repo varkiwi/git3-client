@@ -6,6 +6,7 @@ from cryptography.hazmat.primitives import serialization
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 from git3Client.config.config import MUMBAI_CHAINID, GODWOKEN_TESTNET_CHAINID
 
+
 def get_repo_root_path() -> str:
     """
     Finds the root path of the repository where the .git folder resides and returns the path.
@@ -18,20 +19,27 @@ def get_repo_root_path() -> str:
         NoRepositoryError: if no .git folder is found
     """
     path_to_test = Path(os.getcwd())
-    contains_git_folder = os.path.isdir(str(path_to_test) + '/.git')
+    contains_git_folder = os.path.isdir(str(path_to_test) + "/.git")
     if contains_git_folder:
         return str(path_to_test)
     parent = 0
 
-    while not contains_git_folder and len(path_to_test.parents) != 0 and str(path_to_test.parents[parent]) != '/':
-        contains_git_folder = os.path.isdir(str(path_to_test.parents[parent]) + '/.git')
+    while (
+        not contains_git_folder
+        and len(path_to_test.parents) != 0
+        and str(path_to_test.parents[parent]) != "/"
+    ):
+        contains_git_folder = os.path.isdir(str(path_to_test.parents[parent]) + "/.git")
         if contains_git_folder:
             break
         parent += 1
     if contains_git_folder:
         return str(path_to_test.parents[parent])
-    
-    raise NoRepositoryError('fatal: not a git repository (or any of the parent directories): .git')
+
+    raise NoRepositoryError(
+        "fatal: not a git repository (or any of the parent directories): .git"
+    )
+
 
 def get_value_from_config_file(key: str) -> str:
     """
@@ -53,36 +61,39 @@ def get_value_from_config_file(key: str) -> str:
     except NoRepositoryError as nre:
         raise nre
 
-    config_path = os.path.join(root_path, '.git' , 'config')
+    config_path = os.path.join(root_path, ".git", "config")
     if not os.path.isfile(config_path):
         # if not, use the global config file
-        config_path = '~/.gitconfig'
+        config_path = "~/.gitconfig"
     try:
         content = read_file(os.path.expanduser(config_path))
     except FileNotFoundError:
-        print('No config file found. Please setup a local config or ~/.gitconfig file.')
+        print("No config file found. Please setup a local config or ~/.gitconfig file.")
         sys.exit(1)
 
-    splitted_config = content.decode().split('\n')
+    splitted_config = content.decode().split("\n")
     user = False
     for entry in splitted_config:
-        if entry == '[user]':
+        if entry == "[user]":
             user = True
-        elif entry.startswith('['):
+        elif entry.startswith("["):
             user = False
         elif user:
-            entry = entry.replace('\t', '')
+            entry = entry.replace("\t", "")
             entry = entry.strip()
             if entry.startswith(key):
-                return entry.split('=')[1].strip()
+                return entry.split("=")[1].strip()
+
 
 def get_private_key():
     """
     Reads the private key from a (encrypted) pem file and returns it
     """
-    identity_file_path = get_value_from_config_file('IdentityFile')
+    identity_file_path = get_value_from_config_file("IdentityFile")
     if identity_file_path == None:
-        print('No identity file provided. Please provide an identity file on your config file')
+        print(
+            "No identity file provided. Please provide an identity file on your config file"
+        )
         sys.exit(1)
 
     try:
@@ -91,29 +102,29 @@ def get_private_key():
         print(fnfe)
         sys.exit(1)
 
-    private_key = serialization.load_pem_private_key(
-        pem_content,
-        password=None
-    )
+    private_key = serialization.load_pem_private_key(pem_content, password=None)
     return hex(private_key.private_numbers().private_value)[2:]
 
+
 def get_chain_id(network):
-    if network == 'mumbai':
+    if network == "mumbai":
         return MUMBAI_CHAINID
-    elif network == 'godwoken':
+    elif network == "godwoken":
         return GODWOKEN_TESTNET_CHAINID
     else:
         print(f"Network {network} not supported")
         sys.exit(1)
 
+
 def read_repo_name():
     """Read the repoName file and return the name"""
     repo_root_path = get_repo_root_path()
     try:
-        data = read_file(os.path.join(repo_root_path, '.git', 'name'))
+        data = read_file(os.path.join(repo_root_path, ".git", "name"))
     except FileNotFoundError:
         return ""
-    return data.rstrip().decode('ascii')
+    return data.rstrip().decode("ascii")
+
 
 def get_current_branch_name() -> str:
     """
@@ -131,12 +142,15 @@ def get_current_branch_name() -> str:
     except NoRepositoryError:
         raise nre
     try:
-        headContent = read_file(path=os.path.join(repo_root_path, '.git', 'HEAD')).decode('ascii')
+        headContent = read_file(
+            path=os.path.join(repo_root_path, ".git", "HEAD")
+        ).decode("ascii")
     except FileNotFoundError as fnfe:
         raise fnfe
 
-    branchName = headContent.split('/')[-1].strip()
+    branchName = headContent.split("/")[-1].strip()
     return branchName
+
 
 def get_active_branch_hash() -> str:
     """
@@ -156,35 +170,39 @@ def get_active_branch_hash() -> str:
     except FileNotFoundError as fnfe:
         return None
 
-    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', activeBranch)
+    branch_path = os.path.join(repo_root_path, ".git", "refs", "heads", activeBranch)
     try:
         return read_file(branch_path).decode().strip()
     except FileNotFoundError:
         return None
 
+
 def get_branch_hash(branchName):
     """Get commit hash (SHA-1 string) of a branch."""
     repo_root_path = get_repo_root_path()
-    branch_path = os.path.join(repo_root_path, '.git', 'refs', 'heads', branchName)
+    branch_path = os.path.join(repo_root_path, ".git", "refs", "heads", branchName)
     try:
         return read_file(branch_path).decode().strip()
     except FileNotFoundError:
         return None
+
 
 def remove_files_from_repo():
     """Remove all files from the repository"""
     repo_root_path = get_repo_root_path()
     files = list_files_in_dir(repo_root_path)
     for file in files:
-        if file != '.git':
+        if file != ".git":
             if os.path.isfile(file):
                 os.remove(os.path.join(repo_root_path, file))
             else:
                 shutil.rmtree(os.path.join(repo_root_path, file))
 
+
 def list_files_in_dir(path):
     """List all files in a directory."""
     return os.listdir(path)
+
 
 def read_file(path) -> bytes:
     """
@@ -200,20 +218,21 @@ def read_file(path) -> bytes:
         FileNotFoundError: if file does not exist
     """
     try:
-        with open(path, 'rb') as f:
+        with open(path, "rb") as f:
             return f.read()
     except FileNotFoundError:
-        raise FileNotFoundError('File not found: {}'.format(path))
+        raise FileNotFoundError("File not found: {}".format(path))
 
-def write_file(path: str, data :bytes, binary: str = 'b'):
+
+def write_file(path: str, data: bytes, binary: str = "b"):
     """
     Write data bytes to file at given path.
-    
+
     Args:
         path (str): path to file to write
         data (bytes): data to write to file
         binary (str): 'b' for binary
     """
-    os.makedirs('/'.join(path.split('/')[0:-1]), exist_ok=True)
-    with open(path, 'w{}'.format(binary)) as f:
+    os.makedirs("/".join(path.split("/")[0:-1]), exist_ok=True)
+    with open(path, "w{}".format(binary)) as f:
         f.write(data)

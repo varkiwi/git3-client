@@ -6,7 +6,7 @@ The idea behind Git3 is to combine the power of git and blockchain: Storing code
 
 Each repository is represented by a smart contract, which stores all managing information and receives the payments, like tips or bounties for issues.
 
-The content of the repository is stored on IPFS using a data structure, very similar to git's internal objects. 
+The content of the repository is stored on IPFS using a data structure, very similar to git's internal objects.
 
 In order to be able to use git3, a git3 client is created, which is similar to git. This makes the switch to git3 easier.
 
@@ -22,7 +22,7 @@ ssh-keygen -t ecdsa -b 256 -m pem
 ```
 Once you run the command, two files are generated. The file with the `.pub` extension contains the public key and the file without an extension the private key.
 
-If you want to export the key and import it in MetaMask, use 
+If you want to export the key and import it in MetaMask, use
 ```bash
 openssl ec -outform der -in private_key_file | hd
 ```
@@ -43,7 +43,7 @@ I believe this steps should work.
 https://rchain.atlassian.net/wiki/spaces/CORE/pages/426311681/Ethereum+private+public+keys+addresses+and+PEM+certificates
 
 ### Git config file
-The git3 client needs to know the author's name, email address and where to find the private key. Therefore you can use either the global `.gitconfig` file or a config file stored in the repository in the `.git` folder (`[repositoryName]/.git/config`). 
+The git3 client needs to know the author's name, email address and where to find the private key. Therefore you can use either the global `.gitconfig` file or a config file stored in the repository in the `.git` folder (`[repositoryName]/.git/config`).
 
 #### Gitconfig
 Here is how the contant of the `~/.gitconfig` file looks like
@@ -78,7 +78,7 @@ In case you want to know the Ethereum based address derived form your private ke
 ## Git add
 To add a file to your repository, just use `git3 add file_name`
 
-## Git commit 
+## Git commit
 In order to commit your current repository, just use `git3 commit -m "Message you want to add"`
 
 ## Git push
@@ -144,6 +144,5 @@ Test: `python -m pytest -s`
 
 In the active virtual env, execute the following: `python setup.py sdist bdist_wheel`
 This will create a dist folder. Once done, you can publish to Pypi using twine (pip3 install twine)
-`twine upload dist/*` - enter credentials and that's it. After that you should be able to install your package 
+`twine upload dist/*` - enter credentials and that's it. After that you should be able to install your package
 using pip3 install [name]
-
