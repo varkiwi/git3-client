@@ -1,3 +1,5 @@
+repository = None
+
 class GitRepository:
     """Represents a Git repository.
 

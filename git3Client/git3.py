@@ -22,6 +22,7 @@ from git3Client.gitCommands.pull import pull
 from git3Client.gitCommands.status import status
 
 from git3Client.gitInternals.repository import GitRepository
+from git3Client.gitInternals.repository import repository
 from git3Client.exceptions.NoRepositoryError import NoRepositoryError
 from git3Client.utils.utils import read_file
 from git3Client.utils.utils import get_repo_root_path
@@ -192,10 +193,10 @@ def main(args):
     except NoRepositoryError as nre:
         print(nre)
         exit(1)
-    git_repository = GitRepository(repo_root_path)
+    repository = GitRepository(repo_root_path)
 
     if args.command == "add":
-        add(git_repository, args.paths)
+        add(args.paths)
     elif args.command == "branch":
         if args.branchname:
             create_branch(args.command, args.branchname)

@@ -9,11 +9,12 @@ from git3Client.gitInternals.gitIndex import read_index, write_index
 from git3Client.gitInternals.gitObject import hash_object
 from git3Client.gitInternals.IndexEntry import IndexEntry
 from git3Client.gitInternals.repository import GitRepository
+from git3Client.gitInternals.repository import repository
 
 from git3Client.utils.utils import get_repo_root_path, read_file
 
 
-def add(repository: GitRepository, paths: List[str]) -> None:
+def add(paths: List[str]) -> None:
     """
     Add all file paths to git index.
 
@@ -28,14 +29,14 @@ def add(repository: GitRepository, paths: List[str]) -> None:
     # transfer paths to relative paths. Relative to the repository root
     # in case we are in a subdirectory and add a file
     paths = list(
-        map(lambda path: os.path.relpath(os.path.abspath(path), repo_root_path), paths)
+        map(lambda path: os.path.relpath(os.path.abspath(path), repository.get_repo_path()), paths)
     )
 
     all_entries = read_index()
 
     entries = [e for e in all_entries if e.path not in paths]
     for path in paths:
-        file_path = repo_root_path + "/" + path
+        file_path = repository.get_repo_path() + "/" + path
         try:
             data = read_file(file_path)
         except FileNotFoundError:
@@ -58,7 +59,7 @@ def add(repository: GitRepository, paths: List[str]) -> None:
         # TODO: I believe this is the test of flags < 0xFFF. We need to make this part clearer!
         assert flags < (1 << 12)
         # gets the relative path to the repository root folder for the index file
-        relative_path = os.path.relpath(os.path.abspath(file_path), repo_root_path)
+        relative_path = os.path.relpath(os.path.abspath(file_path), repository.get_repo_path())
         # st.st_ctime_ns % 1000000000 this part gets only the nanosecond fraction of the timestamp
         entry = IndexEntry(
             int(st.st_ctime),
