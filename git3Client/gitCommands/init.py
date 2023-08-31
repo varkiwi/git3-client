@@ -22,8 +22,6 @@ def init(repo: str = "."):
         print(f"Repository {repo} exists already")
         return False
 
-    print("REPO", repo)
-    print(os.path.exists(repo))
     if not os.path.exists(repo):
         os.makedirs(repo)
     os.mkdir(os.path.join(repo, ".git"))

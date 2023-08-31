@@ -5,14 +5,13 @@ import unittest
 
 from git3Client.gitCommands.init import init
 
-from conftest import change_test_dir
 
 REPOSITORY_NAME = "test_repo"
 
 
 @unittest.mock.patch("git3Client.gitCommands.init.os.path.exists", return_value=True)
 def test_init_error_repository_exists(mocked_os_exists, tmpdir):
-    assert init(f"{tmpdir}/{REPOSITORY_NAME}") == False
+    assert not init(f"{tmpdir}/{REPOSITORY_NAME}")
 
 
 @pytest.mark.parametrize(
@@ -21,7 +20,7 @@ def test_init_error_repository_exists(mocked_os_exists, tmpdir):
 def test_init_successful(repository_name, tmpdir):
     repository_path = tmpdir.join(repository_name)
 
-    assert init(repository_path) == True
+    assert init(repository_path)
 
     assert os.path.isdir(repository_path.join(".git"))
 
@@ -42,7 +41,7 @@ def test_init_successful(repository_name, tmpdir):
 
 def test_init_successful_without_param(change_test_dir):
     cwd = os.getcwd()
-    assert init() == True
+    assert init()
 
     assert os.path.isdir(f"{cwd}/.git")
 
