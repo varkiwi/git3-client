@@ -4,7 +4,7 @@ from git3Client.gitInternals.gitObject import read_object
 from git3Client.gitInternals.gitTree import read_tree
 
 
-def cat_file(mode, sha1_prefix):
+def cat_file(mode: str, sha1_prefix):
     """Write the contents of (or info about) object with given SHA-1 prefix to
     stdout. If mode is 'commit', 'tree', or 'blob', print raw data bytes of
     object. If mode is 'size', print the size of the object. If mode is
@@ -28,6 +28,6 @@ def cat_file(mode, sha1_prefix):
                 type_str = "tree" if stat.S_ISDIR(mode) else "blob"
                 print("{:06o} {} {}\t{}".format(mode, type_str, sha1, path))
         else:
-            assert False, "unhandled object type {!r}".format(obj_type)
+            raise ValueError("unhandled object type {!r}".format(obj_type))
     else:
         raise ValueError("unexpected mode {!r}".format(mode))
